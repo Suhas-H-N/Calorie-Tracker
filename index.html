@@ -1,25 +1,27 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calorie Tracker</title>
+    <link rel="stylesheet" href="style1.css">
 </head>
 <body>
     <header>
         <h1>Calorie Tracker</h1>
         <p>Track your daily food intake and calories</p>
     </header>
+    <br>
     <main>
-        <section>
+        <!-- <section> -->
             <h2>Daily Calorie Summary</h2>
             <div>
                 <p>Daily Goal: <span id="daily-goal">2000</span> kcal</p>
                 <p>Consumed: <span id="total-calories">0</span> kcal</p>
                 <p>Remaining: <span id="remaining-calories">2000</span> kcal</p>
             </div>
-        </section>
+        <!-- </section> -->
+        <br>
         <section>
             <h2>Add Food</h2>
             <form id="food-form">
@@ -44,6 +46,7 @@
                 <button type="submit" id="add-food-btn">Add Food</button>
             </form>
         </section>
+        <br>
         <section>
             <h2>Search & Filter</h2>
             <div>
@@ -61,6 +64,7 @@
                 </select>
             </div>
         </section>
+        <br>
         <section>
             <h2>Food Records</h2>
             <div id="empty-state">
@@ -79,10 +83,12 @@
                 </tbody>
             </table>
         </section>
+        <br>
         <section>
             <h2>Daily Total</h2>
             <p>Total Calories: <strong><span id="daily-total">0</span> kcal</strong></p>
         </section>
+        <br>
         <section>
             <p id="status-message"></p>
         </section>
@@ -92,4 +98,3 @@
     </footer>
 </body>
 </html>
-```
