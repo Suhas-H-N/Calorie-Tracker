@@ -4,97 +4,114 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calorie Tracker</title>
-    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>Calorie Tracker</h1>
-        <p>Track your daily food intake and calories</p>
-    </header>
-    <br>
-    <main>
-        <!-- <section> -->
-            <h2>Daily Calorie Summary</h2>
+        <div class="container header-content">
             <div>
-                <p>Daily Goal: <span id="daily-goal">2000</span> kcal</p>
-                <p>Consumed: <span id="total-calories">0</span> kcal</p>
-                <p>Remaining: <span id="remaining-calories">2000</span> kcal</p>
+                <h1>Calorie Tracker</h1>
+                <p>Track your meals and manage your daily calorie intake.</p>
             </div>
-        <!-- </section> -->
-        <br>
-        <section>
-            <h2>Add Food</h2>
+        </div>
+    </header>
+    <main class="container">
+        <section class="summary-section">
+            <div class="section-heading">
+                <h2>Daily Summary</h2>
+                <p>Keep track of your daily calorie goal.</p>
+            </div>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <h3>Daily Goal</h3>
+                    <p><span id="daily-goal">2000</span> kcal</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Consumed</h3>
+                    <p><span id="total-calories">0</span> kcal</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Remaining</h3>
+                    <p><span id="remaining-calories">2000</span> kcal</p>
+                </div>
+            </div>
+        </section>
+        <section class="form-section">
+            <div class="section-heading">
+                <h2>Add Food</h2>
+                <p>Enter your food details below.</p>
+            </div>
             <form id="food-form">
-                <div>
+                <div class="form-group">
                     <label for="food-name">Food Name</label>
                     <input type="text" id="food-name" name="food-name" placeholder="Enter food name" required>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="meal-type">Meal Type</label>
                     <select id="meal-type" name="meal-type" required>
-                        <option value="">Select Meal Type</option>
+                        <option value="">Select meal type</option>
                         <option value="Breakfast">Breakfast</option>
                         <option value="Lunch">Lunch</option>
                         <option value="Dinner">Dinner</option>
                         <option value="Snack">Snack</option>
                     </select>
                 </div>
-                <div>
+                <div class="form-group">
                     <label for="calories">Calories</label>
                     <input type="number" id="calories" name="calories" placeholder="Enter calories" min="1" required>
                 </div>
                 <button type="submit" id="add-food-btn">Add Food</button>
             </form>
         </section>
-        <br>
-        <section>
-            <h2>Search & Filter</h2>
-            <div>
-                <label for="search-food">Search Food</label>
-                <input type="search" id="search-food" placeholder="Search food...">
+        <section class="records-section">
+            <div class="section-heading">
+                <h2>Food Records</h2>
+                <p>View and manage your food intake.</p>
             </div>
-            <div>
-                <label for="filter-meal">Filter by Meal Type</label>
-                <select id="filter-meal">
-                    <option value="all">All Meals</option>
-                    <option value="Breakfast">Breakfast</option>
-                    <option value="Lunch">Lunch</option>
-                    <option value="Dinner">Dinner</option>
-                    <option value="Snack">Snack</option>
-                </select>
+            <div class="search-filter">
+                <div class="form-group">
+                    <label for="search-food">Search Food</label>
+                    <input type="search" id="search-food" placeholder="Search food...">
+                </div>
+                <div class="form-group">
+                    <label for="filter-meal">Filter by Meal Type</label>
+                    <select id="filter-meal">
+                        <option value="all">All Meals</option>
+                        <option value="Breakfast">Breakfast</option>
+                        <option value="Lunch">Lunch</option>
+                        <option value="Dinner">Dinner</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+                </div>
+            </div>
+            <div id="empty-state" class="empty-state">
+                <p>No food records found.</p>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Food Name</th>
+                            <th>Meal Type</th>
+                            <th>Calories</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="food-list"></tbody>
+                </table>
             </div>
         </section>
-        <br>
-        <section>
-            <h2>Food Records</h2>
-            <div id="empty-state">
-                <p>No food records available.</p>
+        <section class="total-section">
+            <div class="total-card">
+                <h2>Daily Total</h2>
+                <p><span id="daily-total">0</span> kcal consumed today</p>
             </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Food Name</th>
-                        <th>Meal Type</th>
-                        <th>Calories</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="food-list">
-                </tbody>
-            </table>
         </section>
-        <br>
-        <section>
-            <h2>Daily Total</h2>
-            <p>Total Calories: <strong><span id="daily-total">0</span> kcal</strong></p>
-        </section>
-        <br>
-        <section>
-            <p id="status-message"></p>
-        </section>
+        <div id="status-message" class="status-message"></div>
     </main>
     <footer>
         <p>&copy; 2026 Calorie Tracker</p>
     </footer>
+    <script src="script.js"></script>
 </body>
 </html>
