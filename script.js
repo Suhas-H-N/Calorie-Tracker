@@ -110,11 +110,9 @@ function addFood(event) {
             return item.id === editId;
         });
 
-        if (food) {
-            food.name = name;
-            food.meal = meal;
-            food.calories = calorieValue;
-        }
+        food.name = name;
+        food.meal = meal;
+        food.calories = calorieValue;
 
         editId = null;
         addFoodBtn.textContent = "Add Food";
@@ -131,17 +129,11 @@ function editFood(id) {
         return item.id === id;
     });
 
-    if (!food) {
-        return;
-    }
-
     foodName.value = food.name;
     mealType.value = food.meal;
     calories.value = food.calories;
-
     editId = id;
     addFoodBtn.textContent = "Update Food";
-    foodName.focus();
 }
 
 function deleteFood(id) {
