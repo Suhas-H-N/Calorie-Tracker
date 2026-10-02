@@ -99,9 +99,26 @@ function addFood(event) {
     let meal = mealType.value;
     let calorieValue = Number(calories.value);
 
-    /* Validate food details before adding */
-    if (name === "" || meal === "" || calorieValue <= 0) {
-        statusMessage.textContent = "Please enter valid food details.";
+    /* Validate food name */
+    if (name === "") {
+        statusMessage.textContent = "Please enter food name.";
+        return;
+    }
+
+    if (name.length < 2) {
+        statusMessage.textContent = "Food name must contain at least 2 characters.";
+        return;
+    }
+
+    /* Validate meal type */
+    if (meal === "") {
+        statusMessage.textContent = "Please select a meal type.";
+        return;
+    }
+
+    /* Validate calories */
+    if (calorieValue <= 0 || isNaN(calorieValue)) {
+        statusMessage.textContent = "Please enter valid calories.";
         return;
     }
 
