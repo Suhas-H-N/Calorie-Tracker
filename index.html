@@ -1,98 +1,113 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calorie Tracker</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <header>
-        <h1>Calorie Tracker</h1>
-        <p>Record food and calories and track daily totals.</p>
-    </header>
-    <main>
-        <section>
-            <h2>Daily Calorie Summary</h2>
-            <div class="summary">
-                <div>
-                    <p>Daily Goal</p>
-                    <span id="daily-goal">2000</span> kcal
-                </div>
-                <div>
-                    <p>Consumed</p>
-                    <span id="total-calories">0</span> kcal
-                </div>
-                <div>
-                    <p>Remaining</p>
-                    <span id="remaining-calories">2000</span> kcal
-                </div>
-            </div>
-        </section>
-        <section>
-            <h2>Add Food</h2>
-            <form id="food-form">
-                <div>
-                    <label for="food-name">Food Name</label>
-                    <input type="text" id="food-name" placeholder="Enter food name" required>
-                </div>
-                <div>
-                    <label for="meal-type">Meal Type</label>
-                    <select id="meal-type" required>
-                        <option value="">Select meal type</option>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                        <option value="Snack">Snack</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="calories">Calories</label>
-                    <input type="number" id="calories" placeholder="Enter calories" min="1" required>
-                </div>
-                <button type="submit" id="add-food-btn">Add Food</button>
-            </form>
-        </section>
-        <section>
-            <h2>Search and Filter</h2>
-            <div class="search-filter">
-                <div>
-                    <label for="search-food">Search Food</label>
-                    <input type="search" id="search-food" placeholder="Search food">
-                </div>
-                <div>
-                    <label for="filter-meal">Filter</label>
-                    <select id="filter-meal">
-                        <option value="all">All Meals</option>
-                        <option value="Breakfast">Breakfast</option>
-                        <option value="Lunch">Lunch</option>
-                        <option value="Dinner">Dinner</option>
-                        <option value="Snack">Snack</option>
-                    </select>
-                </div>
-            </div>
-        </section>
-        <section>
-            <h2>Food Records</h2>
-            <p id="empty-state">No food records available.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Food Name</th>
-                        <th>Meal Type</th>
-                        <th>Calories</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="food-list"></tbody>
-            </table>
-        </section>
-        <section>
-            <h2>Daily Total</h2>
-            <p>Total Calories: <span id="daily-total">0</span> kcal</p>
-        </section>
-        <p id="status-message"></p>
-    </main>
-    <script src="script.js"></script>
-</body>
+<!DOCTYPE html> 
+<html lang="en"> 
+<head> 
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <title>Calorie Tracker</title> 
+    <link rel="stylesheet" href="style.css"> 
+</head> 
+<body> 
+    <!-- Project title and description -->
+    <header> 
+        <h1>Calorie Tracker</h1> 
+        <p>Record food and calories and track daily totals.</p> 
+    </header> 
+
+    <!-- Main content of the application -->
+    <main> 
+        <!-- Displays daily calorie goal, consumed and remaining calories -->
+        <section> 
+            <h2>Daily Calorie Summary</h2> 
+            <div class="summary"> 
+                <div> 
+                    <p>Daily Goal</p> 
+                    <span id="daily-goal">2000</span> kcal 
+                </div> 
+                <div> 
+                    <p>Consumed</p> 
+                    <span id="total-calories">0</span> kcal 
+                </div> 
+                <div> 
+                    <p>Remaining</p> 
+                    <span id="remaining-calories">2000</span> kcal 
+                </div> 
+            </div> 
+        </section> 
+
+        <!-- Form used to enter food details -->
+        <section> 
+            <h2>Add Food</h2> 
+            <form id="food-form"> 
+                <div> 
+                    <label for="food-name">Food Name</label> 
+                    <input type="text" id="food-name" placeholder="Enter food name" required> 
+                </div> 
+                <div> 
+                    <label for="meal-type">Meal Type</label> 
+                    <select id="meal-type" required> 
+                        <option value="">Select meal type</option> 
+                        <option value="Breakfast">Breakfast</option> 
+                        <option value="Lunch">Lunch</option> 
+                        <option value="Dinner">Dinner</option> 
+                        <option value="Snack">Snack</option> 
+                    </select> 
+                </div> 
+                <div> 
+                    <label for="calories">Calories</label> 
+                    <input type="number" id="calories" placeholder="Enter calories" min="1" required> 
+                </div> 
+                <button type="submit" id="add-food-btn">Add Food</button> 
+            </form> 
+        </section> 
+
+        <!-- Allows users to search and filter food records -->
+        <section> 
+            <h2>Search and Filter</h2> 
+            <div class="search-filter"> 
+                <div> 
+                    <label for="search-food">Search Food</label> 
+                    <input type="search" id="search-food" placeholder="Search food"> 
+                </div> 
+                <div> 
+                    <label for="filter-meal">Filter</label> 
+                    <select id="filter-meal"> 
+                        <option value="all">All Meals</option> 
+                        <option value="Breakfast">Breakfast</option> 
+                        <option value="Lunch">Lunch</option> 
+                        <option value="Dinner">Dinner</option> 
+                        <option value="Snack">Snack</option> 
+                    </select> 
+                </div> 
+            </div> 
+        </section> 
+
+        <!-- Table where JavaScript displays food records -->
+        <section> 
+            <h2>Food Records</h2> 
+            <p id="empty-state">No food records available.</p> 
+            <table> 
+                <thead> 
+                    <tr> 
+                        <th>Food Name</th> 
+                        <th>Meal Type</th> 
+                        <th>Calories</th> 
+                        <th>Actions</th> 
+                    </tr> 
+                </thead> 
+                <tbody id="food-list"></tbody> 
+            </table> 
+        </section> 
+
+        <!-- Displays the calculated daily calorie total -->
+        <section> 
+            <h2>Daily Total</h2> 
+            <p>Total Calories: <span id="daily-total">0</span> kcal</p> 
+        </section> 
+
+        <p id="status-message"></p> 
+    </main> 
+
+    <!-- Connects JavaScript with the HTML page -->
+    <script src="script.js"></script> 
+</body> 
 </html>
