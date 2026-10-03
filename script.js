@@ -132,7 +132,7 @@ function addFood(event) {
         };
 
         foodItems.push(newFood);
-        statusMessage.textContent = "Food added successfully.";
+        statusMessage.textContent = "Food record added successfully.";
     } else {
         /* Update an existing food record */
         let food = foodItems.find(function(item) {
@@ -145,7 +145,7 @@ function addFood(event) {
 
         editId = null;
         addFoodBtn.textContent = "Add Food";
-        statusMessage.textContent = "Food updated successfully.";
+        statusMessage.textContent = "Food record updated successfully.";
     }
 
     saveFoodItems();
@@ -174,7 +174,7 @@ function deleteFood(id) {
 
     saveFoodItems();
     displayFoodItems();
-    statusMessage.textContent = "Food deleted successfully.";
+    statusMessage.textContent = "Food record deleted successfully.";
 }
 
 /* Calculate total and remaining calories */
