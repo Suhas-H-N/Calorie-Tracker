@@ -177,7 +177,7 @@ function deleteFood(id) {
     statusMessage.textContent = "Food record deleted successfully.";
 }
 
-/* Calculate total and remaining calories */
+/* Calculate total and update calorie summary */
 function updateTotal() {
     let total = 0;
 
@@ -189,7 +189,12 @@ function updateTotal() {
 
     totalCalories.textContent = total;
     dailyTotal.textContent = total;
-    remainingCalories.textContent = remaining;
+
+    if (remaining >= 0) {
+        remainingCalories.textContent = remaining + " kcal";
+    } else {
+        remainingCalories.textContent = "Exceeded by " + Math.abs(remaining) + " kcal";
+    }
 }
 
 /* Handle form submission, search and filter actions */
