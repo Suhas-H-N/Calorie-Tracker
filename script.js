@@ -30,12 +30,14 @@ function saveFoodItems() {
 function displayFoodItems() {
     foodList.innerHTML = "";
 
-    let searchValue = searchFood.value.toLowerCase().trim();
+    let searchValue = searchFood.value.trim().toLowerCase();
     let filterValue = filterMeal.value;
 
     let filteredItems = foodItems.filter(function(item) {
-        let matchesSearch = item.name.toLowerCase().includes(searchValue);
+        let foodItemName = item.name.toLowerCase();
+        let matchesSearch = foodItemName.includes(searchValue);
         let matchesFilter = filterValue === "all" || item.meal === filterValue;
+
         return matchesSearch && matchesFilter;
     });
 
