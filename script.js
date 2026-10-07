@@ -41,8 +41,9 @@ function displayFoodItems() {
         return matchesSearch && matchesFilter;
     });
 
-    /* Show empty state when no matching records are available */
+    /* Show empty state when no records or matching records are available */
     if (filteredItems.length === 0) {
+        emptyState.textContent = "No food records available.";
         emptyState.style.display = "block";
     } else {
         emptyState.style.display = "none";
