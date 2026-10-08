@@ -11,7 +11,6 @@
         <h1>Calorie Tracker</h1>
         <p>Record food and calories and track daily totals.</p>
     </header>
-
     <main>
         <section>
             <h2>Daily Calorie Summary</h2>
@@ -30,7 +29,6 @@
                 </div>
             </div>
         </section>
-
         <section>
             <h2>Add Food</h2>
             <form id="food-form">
@@ -55,7 +53,6 @@
                 <button type="submit" id="add-food-btn">Add Food</button>
             </form>
         </section>
-
         <section>
             <h2>Search and Filter</h2>
             <div class="search-filter">
@@ -75,31 +72,29 @@
                 </div>
             </div>
         </section>
-
         <section>
             <h2>Food Records</h2>
             <p id="empty-state">No food records available.</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Food Name</th>
-                        <th>Meal Type</th>
-                        <th>Calories</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="food-list"></tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Food Name</th>
+                            <th>Meal Type</th>
+                            <th>Calories</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="food-list"></tbody>
+                </table>
+            </div>
         </section>
-
         <section>
             <h2>Daily Total</h2>
             <p>Total Calories: <span id="daily-total">0</span> kcal</p>
         </section>
-
         <p id="status-message"></p>
     </main>
-
     <script src="script.js"></script>
 </body>
 </html>
