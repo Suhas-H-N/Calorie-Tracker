@@ -63,6 +63,7 @@ function displayFoodItems() {
         calorieCell.textContent = item.calories + " kcal";
 
         let actionCell = document.createElement("td");
+        actionCell.classList.add("action-cell");
 
         /* Create Edit button */
         let editButton = document.createElement("button");
@@ -162,6 +163,10 @@ function editFood(id) {
         return item.id === id;
     });
 
+    if (!food) {
+        return;
+    }
+
     foodName.value = food.name;
     mealType.value = food.meal;
     calories.value = food.calories;
@@ -174,6 +179,12 @@ function deleteFood(id) {
     foodItems = foodItems.filter(function(item) {
         return item.id !== id;
     });
+
+    if (editId === id) {
+        editId = null;
+        foodForm.reset();
+        addFoodBtn.textContent = "Add Food";
+    }
 
     saveFoodItems();
     displayFoodItems();

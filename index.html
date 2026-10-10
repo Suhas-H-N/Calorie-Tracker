@@ -79,10 +79,10 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Food Name</th>
-                            <th>Meal Type</th>
-                            <th>Calories</th>
-                            <th>Actions</th>
+                            <th scope="col">Food Name</th>
+                            <th scope="col">Meal Type</th>
+                            <th scope="col">Calories (kcal)</th>
+                            <th scope="col">Actions</th>
                         </tr>
                     </thead>
                     <tbody id="food-list"></tbody>
@@ -93,7 +93,7 @@
             <h2>Daily Total</h2>
             <p>Total Calories: <span id="daily-total">0</span> kcal</p>
         </section>
-        <p id="status-message"></p>
+        <p id="status-message" role="status" aria-live="polite"></p>
     </main>
     <script src="script.js"></script>
 </body>
