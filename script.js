@@ -1,5 +1,34 @@
 /* Load food records from Local Storage */
-let foodItems = JSON.parse(localStorage.getItem("foodItems")) || [];
+function loadFoodItems() {
+    try {
+        let savedItems = localStorage.getItem("foodItems");
+
+        if (savedItems === null) {
+            return [];
+        }
+
+        let parsedItems = JSON.parse(savedItems);
+
+        if (!Array.isArray(parsedItems)) {
+            return [];
+        }
+
+        return parsedItems.filter(function(item) {
+            return item &&
+                typeof item.id === "number" &&
+                typeof item.name === "string" &&
+                typeof item.meal === "string" &&
+                typeof item.calories === "number" &&
+                Number.isFinite(item.calories) &&
+                item.calories > 0;
+        });
+    } catch (error) {
+        console.error("Unable to load food records:", error);
+        return [];
+    }
+}
+
+let foodItems = loadFoodItems();
 let editId = null;
 const dailyGoal = 2000;
 
@@ -23,7 +52,14 @@ dailyGoalElement.textContent = dailyGoal;
 
 /* Save food records to Local Storage */
 function saveFoodItems() {
-    localStorage.setItem("foodItems", JSON.stringify(foodItems));
+    try {
+        localStorage.setItem("foodItems", JSON.stringify(foodItems));
+        return true;
+    } catch (error) {
+        console.error("Unable to save food records:", error);
+        statusMessage.textContent = "Unable to save records. Check browser storage.";
+        return false;
+    }
 }
 
 /* Display, search and filter food records */
@@ -41,7 +77,7 @@ function displayFoodItems() {
         return matchesSearch && matchesFilter;
     });
 
-    /* Show empty state when no records or matching records are available */
+    /* Show empty state when no records match */
     if (filteredItems.length === 0) {
         emptyState.textContent = "No food records available.";
         emptyState.style.display = "block";
@@ -49,7 +85,7 @@ function displayFoodItems() {
         emptyState.style.display = "none";
     }
 
-    /* Create table rows dynamically for each food record */
+    /* Create table rows dynamically */
     filteredItems.forEach(function(item) {
         let row = document.createElement("tr");
 
@@ -65,7 +101,6 @@ function displayFoodItems() {
         let actionCell = document.createElement("td");
         actionCell.classList.add("action-cell");
 
-        /* Create Edit button */
         let editButton = document.createElement("button");
         editButton.textContent = "Edit";
         editButton.classList.add("edit-btn");
@@ -73,7 +108,6 @@ function displayFoodItems() {
             editFood(item.id);
         });
 
-        /* Create Delete button */
         let deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
         deleteButton.classList.add("delete-btn");
@@ -103,7 +137,6 @@ function addFood(event) {
     let meal = mealType.value;
     let calorieValue = Number(calories.value);
 
-    /* Validate food name */
     if (name === "") {
         statusMessage.textContent = "Please enter food name.";
         return;
@@ -114,19 +147,16 @@ function addFood(event) {
         return;
     }
 
-    /* Validate meal type */
     if (meal === "") {
         statusMessage.textContent = "Please select a meal type.";
         return;
     }
 
-    /* Validate calories */
-    if (calorieValue <= 0 || isNaN(calorieValue)) {
+    if (calories.value.trim() === "" || !Number.isFinite(calorieValue) || calorieValue <= 0) {
         statusMessage.textContent = "Please enter valid calories.";
         return;
     }
 
-    /* Add a new food record */
     if (editId === null) {
         let newFood = {
             id: Date.now(),
@@ -136,23 +166,48 @@ function addFood(event) {
         };
 
         foodItems.push(newFood);
+
+        if (!saveFoodItems()) {
+            foodItems.pop();
+            displayFoodItems();
+            return;
+        }
+
         statusMessage.textContent = "Food record added successfully.";
     } else {
-        /* Update an existing food record */
         let food = foodItems.find(function(item) {
             return item.id === editId;
         });
 
+        if (!food) {
+            editId = null;
+            addFoodBtn.textContent = "Add Food";
+            statusMessage.textContent = "Food record not found.";
+            return;
+        }
+
+        let previousFood = {
+            id: food.id,
+            name: food.name,
+            meal: food.meal,
+            calories: food.calories
+        };
+
         food.name = name;
         food.meal = meal;
         food.calories = calorieValue;
+
+        if (!saveFoodItems()) {
+            Object.assign(food, previousFood);
+            displayFoodItems();
+            return;
+        }
 
         editId = null;
         addFoodBtn.textContent = "Add Food";
         statusMessage.textContent = "Food record updated successfully.";
     }
 
-    saveFoodItems();
     displayFoodItems();
     foodForm.reset();
 }
@@ -164,6 +219,7 @@ function editFood(id) {
     });
 
     if (!food) {
+        statusMessage.textContent = "Food record not found.";
         return;
     }
 
@@ -172,13 +228,28 @@ function editFood(id) {
     calories.value = food.calories;
     editId = id;
     addFoodBtn.textContent = "Update Food";
+    statusMessage.textContent = "";
 }
 
 /* Delete a selected food record */
 function deleteFood(id) {
+    let deletedFood = foodItems.find(function(item) {
+        return item.id === id;
+    });
+
+    if (!deletedFood) {
+        return;
+    }
+
     foodItems = foodItems.filter(function(item) {
         return item.id !== id;
     });
+
+    if (!saveFoodItems()) {
+        foodItems.push(deletedFood);
+        displayFoodItems();
+        return;
+    }
 
     if (editId === id) {
         editId = null;
@@ -186,7 +257,6 @@ function deleteFood(id) {
         addFoodBtn.textContent = "Add Food";
     }
 
-    saveFoodItems();
     displayFoodItems();
     statusMessage.textContent = "Food record deleted successfully.";
 }
@@ -216,5 +286,5 @@ foodForm.addEventListener("submit", addFood);
 searchFood.addEventListener("input", displayFoodItems);
 filterMeal.addEventListener("change", displayFoodItems);
 
-/* Display saved food records when the page loads */
+/* Automatically display saved records when the page opens */
 displayFoodItems();
