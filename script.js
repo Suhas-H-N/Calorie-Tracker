@@ -32,7 +32,6 @@ let foodItems = loadFoodItems();
 let editId = null;
 const dailyGoal = 2000;
 
-/* Get required HTML elements using their IDs */
 const foodForm = document.getElementById("food-form");
 const foodName = document.getElementById("food-name");
 const mealType = document.getElementById("meal-type");
@@ -50,7 +49,6 @@ const addFoodBtn = document.getElementById("add-food-btn");
 
 dailyGoalElement.textContent = dailyGoal;
 
-/* Save food records to Local Storage */
 function saveFoodItems() {
     try {
         localStorage.setItem("foodItems", JSON.stringify(foodItems));
@@ -62,7 +60,6 @@ function saveFoodItems() {
     }
 }
 
-/* Display, search and filter food records */
 function displayFoodItems() {
     foodList.innerHTML = "";
 
@@ -70,14 +67,12 @@ function displayFoodItems() {
     let filterValue = filterMeal.value;
 
     let filteredItems = foodItems.filter(function(item) {
-        let foodItemName = item.name.toLowerCase();
-        let matchesSearch = foodItemName.includes(searchValue);
+        let matchesSearch = item.name.toLowerCase().includes(searchValue);
         let matchesFilter = filterValue === "all" || item.meal === filterValue;
 
         return matchesSearch && matchesFilter;
     });
 
-    /* Show empty state when no records match */
     if (filteredItems.length === 0) {
         emptyState.textContent = "No food records available.";
         emptyState.style.display = "block";
@@ -85,7 +80,6 @@ function displayFoodItems() {
         emptyState.style.display = "none";
     }
 
-    /* Create table rows dynamically */
     filteredItems.forEach(function(item) {
         let row = document.createElement("tr");
 
@@ -129,7 +123,6 @@ function displayFoodItems() {
     updateTotal();
 }
 
-/* Add a new food record or update an existing record */
 function addFood(event) {
     event.preventDefault();
 
@@ -152,8 +145,8 @@ function addFood(event) {
         return;
     }
 
-    if (calories.value.trim() === "" || !Number.isFinite(calorieValue) || calorieValue <= 0) {
-        statusMessage.textContent = "Please enter valid calories.";
+    if (calories.value.trim() === "" || !Number.isFinite(calorieValue) || calorieValue <= 0 || !Number.isInteger(calorieValue)) {
+        statusMessage.textContent = "Please enter valid whole-number calories.";
         return;
     }
 
@@ -212,7 +205,6 @@ function addFood(event) {
     foodForm.reset();
 }
 
-/* Load selected food details into the form for editing */
 function editFood(id) {
     let food = foodItems.find(function(item) {
         return item.id === id;
@@ -231,7 +223,6 @@ function editFood(id) {
     statusMessage.textContent = "";
 }
 
-/* Delete a selected food record */
 function deleteFood(id) {
     let deletedFood = foodItems.find(function(item) {
         return item.id === id;
@@ -261,7 +252,6 @@ function deleteFood(id) {
     statusMessage.textContent = "Food record deleted successfully.";
 }
 
-/* Calculate total and update calorie summary */
 function updateTotal() {
     let total = 0;
 
@@ -281,10 +271,8 @@ function updateTotal() {
     }
 }
 
-/* Handle form submission, search and filter actions */
 foodForm.addEventListener("submit", addFood);
 searchFood.addEventListener("input", displayFoodItems);
 filterMeal.addEventListener("change", displayFoodItems);
 
-/* Automatically display saved records when the page opens */
 displayFoodItems();
