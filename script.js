@@ -1,4 +1,4 @@
-/* Load food records from Local Storage */
+
 function loadFoodItems() {
     try {
         let savedItems = localStorage.getItem("foodItems");
@@ -46,6 +46,10 @@ const dailyTotal = document.getElementById("daily-total");
 const emptyState = document.getElementById("empty-state");
 const statusMessage = document.getElementById("status-message");
 const addFoodBtn = document.getElementById("add-food-btn");
+const progressBar = document.getElementById("progress-bar");
+const progressTrack = document.getElementById("progress-track");
+const progressPercentage = document.getElementById("progress-percentage");
+const progressMessage = document.getElementById("progress-message");
 
 dailyGoalElement.textContent = dailyGoal;
 
@@ -145,7 +149,12 @@ function addFood(event) {
         return;
     }
 
-    if (calories.value.trim() === "" || !Number.isFinite(calorieValue) || calorieValue <= 0 || !Number.isInteger(calorieValue)) {
+    if (
+        calories.value.trim() === "" ||
+        !Number.isFinite(calorieValue) ||
+        calorieValue <= 0 ||
+        !Number.isInteger(calorieValue)
+    ) {
         statusMessage.textContent = "Please enter valid whole-number calories.";
         return;
     }
@@ -224,20 +233,19 @@ function editFood(id) {
 }
 
 function deleteFood(id) {
-    let deletedFood = foodItems.find(function(item) {
+    let deletedIndex = foodItems.findIndex(function(item) {
         return item.id === id;
     });
 
-    if (!deletedFood) {
+    if (deletedIndex === -1) {
         return;
     }
 
-    foodItems = foodItems.filter(function(item) {
-        return item.id !== id;
-    });
+    let deletedFood = foodItems[deletedIndex];
+    foodItems.splice(deletedIndex, 1);
 
     if (!saveFoodItems()) {
-        foodItems.push(deletedFood);
+        foodItems.splice(deletedIndex, 0, deletedFood);
         displayFoodItems();
         return;
     }
@@ -260,6 +268,8 @@ function updateTotal() {
     });
 
     let remaining = dailyGoal - total;
+    let percentage = Math.round((total / dailyGoal) * 100);
+    let barWidth = Math.min(percentage, 100);
 
     totalCalories.textContent = total;
     dailyTotal.textContent = total;
@@ -268,6 +278,22 @@ function updateTotal() {
         remainingCalories.textContent = remaining + " kcal";
     } else {
         remainingCalories.textContent = "Exceeded by " + Math.abs(remaining) + " kcal";
+    }
+
+    progressBar.style.width = barWidth + "%";
+    progressPercentage.textContent = percentage + "%";
+    progressTrack.setAttribute("aria-valuenow", barWidth);
+
+    if (total > dailyGoal) {
+        progressBar.classList.add("exceeded");
+        progressMessage.textContent =
+            "You have exceeded your daily goal by " +
+            Math.abs(remaining) + " kcal.";
+    } else {
+        progressBar.classList.remove("exceeded");
+        progressMessage.textContent =
+            "You have consumed " + percentage +
+            "% of your daily goal.";
     }
 }
 
