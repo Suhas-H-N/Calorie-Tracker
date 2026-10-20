@@ -178,6 +178,88 @@ section h2 {
     font-size: 13px;
 }
 
+/* Meal-wise calorie summary */
+.meal-summary {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.meal-card {
+    padding: 22px 14px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.meal-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 14px rgba(15, 23, 42, 0.08);
+}
+
+.breakfast-card {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.lunch-card {
+    background: #fefce8;
+    border-color: #fde68a;
+}
+
+.dinner-card {
+    background: #eef2ff;
+    border-color: #c7d2fe;
+}
+
+.snack-card {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+}
+
+.meal-icon {
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.meal-card p {
+    color: #475569;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.meal-card span {
+    display: block;
+    font-size: 24px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.meal-card small {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+}
+
+.breakfast-card span {
+    color: #c2410c;
+}
+
+.lunch-card span {
+    color: #a16207;
+}
+
+.dinner-card span {
+    color: #4f46e5;
+}
+
+.snack-card span {
+    color: #047857;
+}
+
 #food-form {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -409,6 +491,15 @@ th:last-child {
         padding: 18px;
     }
 
+    .meal-summary {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .meal-card {
+        padding: 18px 12px;
+    }
+
     #food-form {
         grid-template-columns: 1fr;
         gap: 16px;
@@ -476,6 +567,22 @@ th:last-child {
 
     #progress-percentage {
         font-size: 16px;
+    }
+
+    .meal-summary {
+        gap: 10px;
+    }
+
+    .meal-card {
+        padding: 16px 8px;
+    }
+
+    .meal-card span {
+        font-size: 21px;
+    }
+
+    .meal-icon {
+        font-size: 22px;
     }
 
     input,
