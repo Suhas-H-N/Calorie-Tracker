@@ -50,6 +50,10 @@ const progressBar = document.getElementById("progress-bar");
 const progressTrack = document.getElementById("progress-track");
 const progressPercentage = document.getElementById("progress-percentage");
 const progressMessage = document.getElementById("progress-message");
+const breakfastCalories = document.getElementById("breakfast-calories");
+const lunchCalories = document.getElementById("lunch-calories");
+const dinnerCalories = document.getElementById("dinner-calories");
+const snackCalories = document.getElementById("snack-calories");
 
 dailyGoalElement.textContent = dailyGoal;
 
@@ -125,6 +129,7 @@ function displayFoodItems() {
     });
 
     updateTotal();
+    updateMealSummary();
 }
 
 function addFood(event) {
@@ -295,6 +300,30 @@ function updateTotal() {
             "You have consumed " + percentage +
             "% of your daily goal.";
     }
+}
+
+function updateMealSummary() {
+    let breakfastTotal = 0;
+    let lunchTotal = 0;
+    let dinnerTotal = 0;
+    let snackTotal = 0;
+
+    foodItems.forEach(function(item) {
+        if (item.meal === "Breakfast") {
+            breakfastTotal += item.calories;
+        } else if (item.meal === "Lunch") {
+            lunchTotal += item.calories;
+        } else if (item.meal === "Dinner") {
+            dinnerTotal += item.calories;
+        } else if (item.meal === "Snack") {
+            snackTotal += item.calories;
+        }
+    });
+
+    breakfastCalories.textContent = breakfastTotal;
+    lunchCalories.textContent = lunchTotal;
+    dinnerCalories.textContent = dinnerTotal;
+    snackCalories.textContent = snackTotal;
 }
 
 foodForm.addEventListener("submit", addFood);
