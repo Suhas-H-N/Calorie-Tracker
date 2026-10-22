@@ -9,8 +9,15 @@
 </head>
 <body>
     <header>
-        <h1>Calorie Tracker</h1>
-        <p>Record food and calories and track daily totals.</p>
+        <div class="header-content">
+            <div>
+                <h1>Calorie Tracker</h1>
+                <p>Record food and calories and track daily totals.</p>
+            </div>
+            <button type="button" id="theme-toggle" aria-label="Switch to dark mode" aria-pressed="false">
+                🌙 Dark Mode
+            </button>
+        </div>
     </header>
 
     <main>
@@ -36,15 +43,7 @@
                     <h3>Daily Goal Progress</h3>
                     <span id="progress-percentage">0%</span>
                 </div>
-                <div
-                    class="progress-track"
-                    id="progress-track"
-                    role="progressbar"
-                    aria-label="Daily calorie goal progress"
-                    aria-valuemin="0"
-                    aria-valuemax="100"
-                    aria-valuenow="0"
-                >
+                <div id="progress-track" class="progress-track" role="progressbar" aria-label="Daily calorie goal progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
                     <div id="progress-bar" class="progress-bar"></div>
                 </div>
                 <p id="progress-message">You have consumed 0% of your daily goal.</p>
@@ -146,9 +145,7 @@
 
         <section>
             <h2>Daily Total</h2>
-            <p class="daily-total-text">
-                Total Calories: <span id="daily-total">0</span> kcal
-            </p>
+            <p class="daily-total-text">Total Calories: <span id="daily-total">0</span> kcal</p>
         </section>
 
         <p id="status-message" role="status" aria-live="polite"></p>
