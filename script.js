@@ -54,8 +54,41 @@ const breakfastCalories = document.getElementById("breakfast-calories");
 const lunchCalories = document.getElementById("lunch-calories");
 const dinnerCalories = document.getElementById("dinner-calories");
 const snackCalories = document.getElementById("snack-calories");
+const themeToggle = document.getElementById("theme-toggle");
 
 dailyGoalElement.textContent = dailyGoal;
+
+function applyTheme(isDark) {
+    document.body.classList.toggle("dark-mode", isDark);
+    themeToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+    themeToggle.setAttribute("aria-pressed", String(isDark));
+    themeToggle.setAttribute(
+        "aria-label",
+        isDark ? "Switch to light mode" : "Switch to dark mode"
+    );
+
+    try {
+        localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
+    } catch (error) {
+        console.error("Unable to save theme preference:", error);
+    }
+}
+
+function loadTheme() {
+    try {
+        return localStorage.getItem("calorieTrackerTheme") === "dark";
+    } catch (error) {
+        console.error("Unable to load theme preference:", error);
+        return false;
+    }
+}
+
+themeToggle.addEventListener("click", function() {
+    let isDark = !document.body.classList.contains("dark-mode");
+    applyTheme(isDark);
+});
+
+applyTheme(loadTheme());
 
 function saveFoodItems() {
     try {
