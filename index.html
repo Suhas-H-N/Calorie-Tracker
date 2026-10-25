@@ -14,13 +14,21 @@
                 <h1>Calorie Tracker</h1>
                 <p>Record food and calories and track daily totals.</p>
             </div>
-            <button type="button" id="theme-toggle" aria-label="Switch to dark mode" aria-pressed="false">
-                🌙 Dark Mode
-            </button>
+            <button type="button" id="theme-toggle" aria-label="Switch to dark mode" aria-pressed="false">🌙 Dark Mode</button>
         </div>
     </header>
 
     <main>
+        <section>
+            <h2>Daily Food History</h2>
+            <div class="date-picker-container">
+                <label for="selected-date">Select Date</label>
+                <input type="date" id="selected-date">
+                <button type="button" id="today-btn">Today</button>
+            </div>
+            <p id="history-message">Showing food records for the selected date.</p>
+        </section>
+
         <section>
             <h2>Daily Calorie Summary</h2>
             <div class="summary">
@@ -81,7 +89,7 @@
         </section>
 
         <section>
-            <h2>Add Food</h2>
+            <h2 id="form-heading">Add Food</h2>
             <form id="food-form">
                 <div>
                     <label for="food-name">Food Name</label>
@@ -102,6 +110,7 @@
                     <input type="number" id="calories" placeholder="Enter calories" min="1" step="1" required>
                 </div>
                 <button type="submit" id="add-food-btn">Add Food</button>
+                <button type="button" id="cancel-edit-btn" hidden>Cancel Edit</button>
             </form>
         </section>
 
@@ -127,7 +136,7 @@
 
         <section>
             <h2>Food Records</h2>
-            <p id="empty-state">No food records available.</p>
+            <p id="empty-state">No food records available for this date.</p>
             <div class="table-container">
                 <table>
                     <thead>
