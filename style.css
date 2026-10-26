@@ -63,32 +63,12 @@ header {
 
 header h1 {
     font-size: 34px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
     margin-bottom: 8px;
 }
 
 header p {
-    font-size: 15px;
     color: #e0e7ff;
-}
-
-#theme-toggle {
-    flex-shrink: 0;
-    padding: 12px 16px;
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    border-radius: 9px;
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-    font-family: Verdana, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-#theme-toggle:hover {
-    background: rgba(255, 255, 255, 0.24);
+    font-size: 15px;
 }
 
 main {
@@ -103,18 +83,75 @@ main {
 section {
     background: var(--surface);
     padding: 28px;
-    border-radius: 16px;
     border: 1px solid var(--border);
+    border-radius: 16px;
     box-shadow: 0 6px 22px rgba(15, 23, 42, 0.05);
     transition: background-color 0.25s, border-color 0.25s;
 }
 
 section h2 {
     font-size: 21px;
-    font-weight: 700;
     color: var(--primary-dark);
     margin-bottom: 22px;
     line-height: 1.4;
+}
+
+button {
+    padding: 12px 17px;
+    border: none;
+    border-radius: 9px;
+    background: var(--primary);
+    color: #ffffff;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background: var(--primary-dark);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+#theme-toggle {
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+#theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.24);
+}
+
+.date-picker-container {
+    display: flex;
+    align-items: end;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.date-picker-container label {
+    width: 100%;
+}
+
+#selected-date {
+    flex: 1;
+    min-width: 180px;
+}
+
+#history-message {
+    color: var(--muted);
+    margin-top: 14px;
+    font-size: 13px;
 }
 
 .summary {
@@ -130,6 +167,20 @@ section h2 {
     border: 1px solid transparent;
 }
 
+.summary p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.summary span {
+    display: inline-block;
+    font-size: 25px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
 .goal-card {
     background: #eef2ff;
     border-color: #c7d2fe !important;
@@ -143,20 +194,6 @@ section h2 {
 .remaining-card {
     background: #f0f9ff;
     border-color: #bae6fd !important;
-}
-
-.summary p {
-    font-size: 14px;
-    font-weight: 600;
-    color: #475569;
-    margin-bottom: 8px;
-}
-
-.summary span {
-    display: inline-block;
-    font-size: 25px;
-    font-weight: 700;
-    overflow-wrap: anywhere;
 }
 
 .goal-card span {
@@ -337,16 +374,10 @@ select {
     font-size: 14px;
     color: var(--text);
     background: var(--input-background);
-    transition: border-color 0.2s, box-shadow 0.2s, background-color 0.25s;
 }
 
 input::placeholder {
     color: var(--muted);
-}
-
-input:hover,
-select:hover {
-    border-color: var(--primary);
 }
 
 input:focus,
@@ -356,35 +387,20 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-button {
-    padding: 12px 17px;
-    border: none;
-    border-radius: 9px;
-    background: var(--primary);
-    color: #ffffff;
-    font-family: Verdana, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
-}
-
 #add-food-btn {
     min-height: 44px;
 }
 
-button:hover {
-    background: var(--primary-dark);
-    box-shadow: 0 3px 8px rgba(79, 70, 229, 0.15);
+#cancel-edit-btn {
+    background: #64748b;
 }
 
-button:focus-visible {
-    outline: 2px solid var(--primary);
-    outline-offset: 3px;
+#cancel-edit-btn:hover {
+    background: #475569;
 }
 
-button:active {
-    transform: scale(0.98);
+[hidden] {
+    display: none !important;
 }
 
 .search-filter {
@@ -420,7 +436,6 @@ th {
     background: #312e81;
     color: #ffffff;
     font-size: 12px;
-    font-weight: 700;
     letter-spacing: 0.4px;
     text-transform: uppercase;
     white-space: nowrap;
@@ -432,7 +447,6 @@ td {
 
 tbody tr {
     background: var(--table-row);
-    transition: background-color 0.2s;
 }
 
 tbody tr:nth-child(even) {
@@ -512,7 +526,6 @@ body.dark-mode #status-message {
     font-weight: 700;
 }
 
-/* Keep meal summary cards readable in dark mode */
 body.dark-mode .breakfast-card {
     background: #422c24;
     border-color: #854d0e;
@@ -534,7 +547,8 @@ body.dark-mode .snack-card {
 }
 
 body.dark-mode .meal-card p,
-body.dark-mode .meal-card small {
+body.dark-mode .meal-card small,
+body.dark-mode .summary p {
     color: #e2e8f0;
 }
 
@@ -567,10 +581,6 @@ body.dark-mode .consumed-card {
 body.dark-mode .remaining-card {
     background: #17364a;
     border-color: #0369a1 !important;
-}
-
-body.dark-mode .summary p {
-    color: #e2e8f0;
 }
 
 body.dark-mode .goal-card span {
@@ -682,14 +692,6 @@ body.dark-mode .remaining-card span {
     .progress-section {
         padding: 16px;
         margin-top: 20px;
-    }
-
-    .progress-heading h3 {
-        font-size: 14px;
-    }
-
-    #progress-percentage {
-        font-size: 16px;
     }
 
     .meal-card {
