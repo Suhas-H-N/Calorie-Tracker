@@ -1,4 +1,13 @@
 
+function getTodayDate() {
+    let date = new Date();
+    let year = date.getFullYear();
+    let month = String(date.getMonth() + 1).padStart(2, "0");
+    let day = String(date.getDate()).padStart(2, "0");
+
+    return year + "-" + month + "-" + day;
+}
+
 function loadFoodItems() {
     try {
         let savedItems = localStorage.getItem("foodItems");
@@ -13,6 +22,8 @@ function loadFoodItems() {
             return [];
         }
 
+        let today = getTodayDate();
+
         return parsedItems.filter(function(item) {
             return item &&
                 typeof item.id === "number" &&
@@ -21,6 +32,12 @@ function loadFoodItems() {
                 typeof item.calories === "number" &&
                 Number.isFinite(item.calories) &&
                 item.calories > 0;
+        }).map(function(item) {
+            if (!item.date || !/^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
+                item.date = today;
+            }
+
+            return item;
         });
     } catch (error) {
         console.error("Unable to load food records:", error);
@@ -55,7 +72,13 @@ const lunchCalories = document.getElementById("lunch-calories");
 const dinnerCalories = document.getElementById("dinner-calories");
 const snackCalories = document.getElementById("snack-calories");
 const themeToggle = document.getElementById("theme-toggle");
+const selectedDate = document.getElementById("selected-date");
+const todayBtn = document.getElementById("today-btn");
+const historyMessage = document.getElementById("history-message");
+const cancelEditBtn = document.getElementById("cancel-edit-btn");
+const formHeading = document.getElementById("form-heading");
 
+selectedDate.value = getTodayDate();
 dailyGoalElement.textContent = dailyGoal;
 
 function applyTheme(isDark) {
@@ -84,8 +107,7 @@ function loadTheme() {
 }
 
 themeToggle.addEventListener("click", function() {
-    let isDark = !document.body.classList.contains("dark-mode");
-    applyTheme(isDark);
+    applyTheme(!document.body.classList.contains("dark-mode"));
 });
 
 applyTheme(loadTheme());
@@ -101,13 +123,20 @@ function saveFoodItems() {
     }
 }
 
+function getSelectedDateItems() {
+    return foodItems.filter(function(item) {
+        return item.date === selectedDate.value;
+    });
+}
+
 function displayFoodItems() {
     foodList.innerHTML = "";
 
     let searchValue = searchFood.value.trim().toLowerCase();
     let filterValue = filterMeal.value;
+    let dateItems = getSelectedDateItems();
 
-    let filteredItems = foodItems.filter(function(item) {
+    let filteredItems = dateItems.filter(function(item) {
         let matchesSearch = item.name.toLowerCase().includes(searchValue);
         let matchesFilter = filterValue === "all" || item.meal === filterValue;
 
@@ -115,7 +144,9 @@ function displayFoodItems() {
     });
 
     if (filteredItems.length === 0) {
-        emptyState.textContent = "No food records available.";
+        emptyState.textContent = dateItems.length === 0
+            ? "No food records available for this date."
+            : "No food records match your search or filter.";
         emptyState.style.display = "block";
     } else {
         emptyState.style.display = "none";
@@ -161,8 +192,17 @@ function displayFoodItems() {
         foodList.appendChild(row);
     });
 
+    historyMessage.textContent = "Showing food records for " + selectedDate.value + ".";
     updateTotal();
     updateMealSummary();
+}
+
+function resetFoodForm() {
+    editId = null;
+    foodForm.reset();
+    addFoodBtn.textContent = "Add Food";
+    formHeading.textContent = "Add Food";
+    cancelEditBtn.hidden = true;
 }
 
 function addFood(event) {
@@ -171,6 +211,12 @@ function addFood(event) {
     let name = foodName.value.trim();
     let meal = mealType.value;
     let calorieValue = Number(calories.value);
+    let foodDate = selectedDate.value;
+
+    if (!foodDate) {
+        statusMessage.textContent = "Please select a date.";
+        return;
+    }
 
     if (name === "") {
         statusMessage.textContent = "Please enter food name.";
@@ -202,7 +248,8 @@ function addFood(event) {
             id: Date.now(),
             name: name,
             meal: meal,
-            calories: calorieValue
+            calories: calorieValue,
+            date: foodDate
         };
 
         foodItems.push(newFood);
@@ -220,8 +267,7 @@ function addFood(event) {
         });
 
         if (!food) {
-            editId = null;
-            addFoodBtn.textContent = "Add Food";
+            resetFoodForm();
             statusMessage.textContent = "Food record not found.";
             return;
         }
@@ -230,12 +276,14 @@ function addFood(event) {
             id: food.id,
             name: food.name,
             meal: food.meal,
-            calories: food.calories
+            calories: food.calories,
+            date: food.date
         };
 
         food.name = name;
         food.meal = meal;
         food.calories = calorieValue;
+        food.date = foodDate;
 
         if (!saveFoodItems()) {
             Object.assign(food, previousFood);
@@ -243,13 +291,11 @@ function addFood(event) {
             return;
         }
 
-        editId = null;
-        addFoodBtn.textContent = "Add Food";
         statusMessage.textContent = "Food record updated successfully.";
     }
 
+    resetFoodForm();
     displayFoodItems();
-    foodForm.reset();
 }
 
 function editFood(id) {
@@ -265,9 +311,15 @@ function editFood(id) {
     foodName.value = food.name;
     mealType.value = food.meal;
     calories.value = food.calories;
+    selectedDate.value = food.date;
     editId = id;
     addFoodBtn.textContent = "Update Food";
+    formHeading.textContent = "Edit Food";
+    cancelEditBtn.hidden = false;
     statusMessage.textContent = "";
+
+    displayFoodItems();
+    foodName.focus();
 }
 
 function deleteFood(id) {
@@ -289,9 +341,7 @@ function deleteFood(id) {
     }
 
     if (editId === id) {
-        editId = null;
-        foodForm.reset();
-        addFoodBtn.textContent = "Add Food";
+        resetFoodForm();
     }
 
     displayFoodItems();
@@ -301,7 +351,7 @@ function deleteFood(id) {
 function updateTotal() {
     let total = 0;
 
-    foodItems.forEach(function(item) {
+    getSelectedDateItems().forEach(function(item) {
         total += item.calories;
     });
 
@@ -325,13 +375,11 @@ function updateTotal() {
     if (total > dailyGoal) {
         progressBar.classList.add("exceeded");
         progressMessage.textContent =
-            "You have exceeded your daily goal by " +
-            Math.abs(remaining) + " kcal.";
+            "You have exceeded your daily goal by " + Math.abs(remaining) + " kcal.";
     } else {
         progressBar.classList.remove("exceeded");
         progressMessage.textContent =
-            "You have consumed " + percentage +
-            "% of your daily goal.";
+            "You have consumed " + percentage + "% of your daily goal.";
     }
 }
 
@@ -341,7 +389,7 @@ function updateMealSummary() {
     let dinnerTotal = 0;
     let snackTotal = 0;
 
-    foodItems.forEach(function(item) {
+    getSelectedDateItems().forEach(function(item) {
         if (item.meal === "Breakfast") {
             breakfastTotal += item.calories;
         } else if (item.meal === "Lunch") {
@@ -359,8 +407,32 @@ function updateMealSummary() {
     snackCalories.textContent = snackTotal;
 }
 
+function changeSelectedDate() {
+    resetFoodForm();
+    statusMessage.textContent = "";
+    displayFoodItems();
+}
+
+selectedDate.addEventListener("change", changeSelectedDate);
+
+todayBtn.addEventListener("click", function() {
+    selectedDate.value = getTodayDate();
+    changeSelectedDate();
+});
+
+cancelEditBtn.addEventListener("click", function() {
+    resetFoodForm();
+    statusMessage.textContent = "";
+});
+
 foodForm.addEventListener("submit", addFood);
 searchFood.addEventListener("input", displayFoodItems);
 filterMeal.addEventListener("change", displayFoodItems);
 
 displayFoodItems();
+
+if (foodItems.some(function(item) {
+    return !item.date;
+})) {
+    saveFoodItems();
+}
