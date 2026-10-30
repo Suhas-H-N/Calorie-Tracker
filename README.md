@@ -1,42 +1,47 @@
-# 🍎 Calorie Tracker
+# Calorie Tracker
 
-A simple and responsive web application built using **HTML, CSS, and JavaScript** to record food intake, track daily calories, and monitor progress toward a daily calorie goal.
+A simple and responsive web application built using **HTML, CSS, and JavaScript** to record daily food intake, calculate calories, and monitor calorie goals.
 
-## 📌 Project Overview
+## 🎯 Project Objective
 
-The Calorie Tracker helps users maintain a record of their food consumption throughout the day. Users can add food items, select meal types, enter calories, edit or delete records, and view their daily calorie summary.
-
-The application uses browser **Local Storage** to preserve food records after refreshing or reopening the page in the same browser.
+The objective of this project is to help users track their daily food consumption, calculate total calories, monitor meal-wise intake, and maintain healthy eating habits.
 
 ## ✨ Features
 
-- **Add Food:** Add food items with their names, meal types, and calorie values.
-- **Meal Type Selection:** Categorize food as Breakfast, Lunch, Dinner, or Snack.
+- **Add Food:** Add food records with food name, meal type, and calories.
+- **Meal Categories:** Organize food into Breakfast, Lunch, Dinner, and Snack.
 - **Edit Food:** Update existing food records.
 - **Delete Food:** Remove unwanted food records.
-- **Daily Calorie Summary:** View the daily goal, total calories consumed, and remaining calories.
-- **Exceeded Goal Display:** Shows how many calories the user has exceeded when consumption goes above the daily goal.
-- **Search Food:** Find food items using case-insensitive search.
-- **Filter Meals:** Display records by meal type.
-- **Local Storage:** Automatically save records after adding, editing, or deleting food.
-- **Automatic Data Loading:** Restore saved records when the page opens.
-- **Input Validation:** Handle empty food names, invalid meal selections, and invalid calorie values.
-- **Empty State:** Display a helpful message when no food records match the current search or filter.
-- **Responsive Design:** Adapt the form and layout for mobile and desktop screens.
-- **Improved Table Design:** Clear headings, row spacing, hover effects, aligned calorie values, and distinct Edit/Delete buttons.
-- **Status Messages:** Display feedback after successful operations or invalid input.
+- **Undo Delete:** Restore the most recently deleted food record with its original details.
+- **Daily Calorie Summary:** View total calories consumed for a selected date.
+- **Daily Calorie Goal:** Track progress toward the 2000 kcal daily goal.
+- **Remaining Calories:** View calories remaining or calories exceeding the daily goal.
+- **Progress Bar:** Visualize daily calorie goal progress.
+- **Meal-Wise Summary:** View calorie consumption for each meal category.
+- **Daily Food History:** Select previous dates to view food records.
+- **Search Food:** Search food records by name.
+- **Filter by Meal:** Filter records according to meal type.
+- **Weekly Calorie Report:** View weekly calorie totals, daily averages, and the highest-intake day.
+- **Weekly Chart:** Visualize calorie consumption over seven days.
+- **CSV Export:** Export all food records into a CSV file.
+- **Local Storage:** Save food records in the browser.
+- **Dark Mode:** Switch between light and dark themes.
+- **Form Validation:** Prevent invalid food entries.
+- **Responsive Design:** Supports desktop, tablet, and mobile screens.
+- **Status Messages:** Display confirmation and validation messages.
 
 ## 🛠️ Technologies Used
 
-- **HTML5** – Structure and semantic elements.
-- **CSS3** – Styling, Flexbox, CSS Grid, hover effects, and responsive layouts.
-- **JavaScript** – DOM manipulation, event handling, validation, search, filtering, and calorie calculations.
-- **Local Storage** – Persistent browser-side storage for food records.
+- HTML5 – Application structure
+- CSS3 – Styling, Flexbox, Grid, and responsive design
+- JavaScript – Application logic and DOM manipulation
+- Local Storage – Browser-based data persistence
 
 ## 📂 Project Structure
 
 ```text
 Calorie-Tracker/
+│
 ├── index.html
 ├── style.css
 ├── script.js
@@ -45,99 +50,56 @@ Calorie-Tracker/
 
 ## 🚀 How to Run the Project
 
-1. Clone or download this repository.
-2. Open the project folder in Visual Studio Code.
-3. Make sure `index.html`, `style.css`, and `script.js` are in the same folder.
-4. Open `index.html` in your browser, or run it using the Live Server extension in VS Code.
-5. Start adding food records and tracking your calories.
+1. Clone the repository:
 
-No backend or database installation is required.
+```bash
+git clone YOUR_REPOSITORY_URL
+```
 
-## 📖 How to Use
+2. Open the project folder in VS Code.
 
-1. Open the Calorie Tracker in your browser.
-2. Enter the food name.
-3. Select the meal type.
-4. Enter the calories.
-5. Click **Add Food**.
-6. View the food record in the table and check the updated calorie summary.
-7. Use **Edit** to update a record or **Delete** to remove it.
-8. Use the search field to find food items and the filter to select a meal type.
-9. Refresh the browser to verify that saved records are restored automatically.
+3. Open `index.html` in your browser.
 
-## 🎯 Daily Calorie Goal
+4. Add food records and start tracking your calories.
 
-The default daily calorie goal is **2000 kcal**.
+You can also use the **Live Server** extension in VS Code.
 
-The summary displays:
+## 💡 How Undo Delete Works
 
-- **Daily Goal:** The target calorie amount.
-- **Consumed:** The total calories recorded.
-- **Remaining:** The calories left before reaching the goal.
+1. Click the Delete button on a food record.
+2. A deletion confirmation message appears.
+3. Click the Undo button to restore the deleted record.
+4. The restored record retains its original food name, meal type, calories, date, and ID.
 
-If the total exceeds the goal, the application displays the excess amount.
-
-Example:
-
-| Daily Goal | Consumed | Remaining |
-|---:|---:|---:|
-| 2000 kcal | 1500 kcal | 500 kcal |
-| 2000 kcal | 2000 kcal | 0 kcal |
-| 2000 kcal | 2300 kcal | Exceeded by 300 kcal |
-
-The goal is a configurable value in the JavaScript code. The application is a tracking tool and does not provide personalized dietary advice.
+**Note:** Undo is available only for the most recent deletion during the current page session. Refreshing the page clears the pending Undo action.
 
 ## 💾 Data Storage
 
-Food records are stored in the browser's Local Storage under the key `foodItems`.
+Food records are stored using the browser's Local Storage.
 
-The application saves changes after:
-- Adding a food record.
-- Editing a food record.
-- Deleting a food record.
+- Records remain available after refreshing the page.
+- Editing and deleting records update Local Storage.
+- Undo restores the deleted record and saves it again.
+- CSV export allows users to keep an external copy of their records.
 
-Saved records are loaded automatically when the page opens again in the same browser and website origin.
-
-**Note:** Local Storage is browser-specific. Clearing site data or using another browser or device may remove or hide saved records.
+**Note:** Data is stored in the current browser and device. Clearing browser storage may remove saved records.
 
 ## 📱 Responsive Design
 
-The interface uses CSS Grid and Flexbox to maintain a clean layout across screen sizes.
+The application uses CSS Flexbox and Grid to provide a responsive layout for different screen sizes.
 
-- Food entry fields stack vertically on smaller screens.
-- Search and filter controls adapt to mobile layouts.
-- The food records table supports horizontal scrolling on narrow screens.
-- Buttons, headings, and spacing are adjusted for readability.
-
-## 📚 Concepts Learned
-
-This project provides hands-on practice with:
-
-- HTML forms and semantic elements.
-- CSS Grid and Flexbox.
-- Responsive web design and media queries.
-- JavaScript functions and event listeners.
-- DOM manipulation and dynamic table generation.
-- Array methods such as `filter()` and `find()`.
-- Form validation.
-- Case-insensitive string matching.
-- Browser Local Storage using `JSON.stringify()` and `JSON.parse()`.
-- Basic error handling.
-
-## 🔮 Future Improvements
-
-Possible future enhancements include:
+## 🔮 Future Enhancements
 
 - Customizable daily calorie goals.
-- Date-wise food tracking and history.
-- Meal-wise calorie summaries.
-- Exporting food records to CSV.
-- Charts for visualizing calorie consumption.
+- Monthly calorie reports.
+- Food nutrition database integration.
+- Data import from CSV files.
+- User authentication and cloud-based storage.
 
 ## 👨‍💻 Author
 
-**Developed as a front-end development mini project** to practice HTML, CSS, JavaScript, and browser storage.
+**Suhas H N**
 
 ## 📄 License
 
-This project is available for learning and educational purposes. Add a specific open-source license if you intend to distribute it under formal license terms.
+This project is created for educational and learning purposes.
