@@ -1,124 +1,54 @@
+const foodForm = document.getElementById("food-form");
+const foodName = document.getElementById("food-name");
+const mealType = document.getElementById("meal-type");
+const foodCalories = document.getElementById("food-calories");
+const foodList = document.getElementById("food-list");
+const selectedDate = document.getElementById("selected-date");
+const searchFood = document.getElementById("search-food");
+const filterMeal = document.getElementById("filter-meal");
+
+const dailyGoal = 2000;
+let foodItems = loadFoodItems();
+let editId = null;
+let deletedItem = null;
 
 function getTodayDate() {
-    let date = new Date();
-    let year = date.getFullYear();
-    let month = String(date.getMonth() + 1).padStart(2, "0");
-    let day = String(date.getDate()).padStart(2, "0");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
-    return year + "-" + month + "-" + day;
+    return `${year}-${month}-${day}`;
 }
 
 function loadFoodItems() {
     try {
-        let savedItems = localStorage.getItem("foodItems");
+        const savedItems = JSON.parse(localStorage.getItem("foodItems")) || [];
 
-        if (savedItems === null) {
+        if (!Array.isArray(savedItems)) {
             return [];
         }
 
-        let parsedItems = JSON.parse(savedItems);
-
-        if (!Array.isArray(parsedItems)) {
-            return [];
-        }
-
-        let today = getTodayDate();
-
-        return parsedItems.filter(function(item) {
-            return item &&
-                typeof item.id === "number" &&
-                typeof item.name === "string" &&
-                typeof item.meal === "string" &&
-                typeof item.calories === "number" &&
-                Number.isFinite(item.calories) &&
-                item.calories > 0;
-        }).map(function(item) {
-            if (!item.date || !/^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
-                item.date = today;
-            }
-
-            return item;
+        return savedItems.map(function(item) {
+            return {
+                id: item.id || Date.now() + Math.random(),
+                name: String(item.name || ""),
+                meal: String(item.meal || "Breakfast"),
+                calories: Number(item.calories) || 0,
+                date: item.date || getTodayDate()
+            };
         });
     } catch (error) {
-        console.error("Unable to load food records:", error);
         return [];
     }
 }
-
-let foodItems = loadFoodItems();
-let editId = null;
-const dailyGoal = 2000;
-
-const foodForm = document.getElementById("food-form");
-const foodName = document.getElementById("food-name");
-const mealType = document.getElementById("meal-type");
-const calories = document.getElementById("calories");
-const foodList = document.getElementById("food-list");
-const searchFood = document.getElementById("search-food");
-const filterMeal = document.getElementById("filter-meal");
-const dailyGoalElement = document.getElementById("daily-goal");
-const totalCalories = document.getElementById("total-calories");
-const remainingCalories = document.getElementById("remaining-calories");
-const dailyTotal = document.getElementById("daily-total");
-const emptyState = document.getElementById("empty-state");
-const statusMessage = document.getElementById("status-message");
-const addFoodBtn = document.getElementById("add-food-btn");
-const progressBar = document.getElementById("progress-bar");
-const progressTrack = document.getElementById("progress-track");
-const progressPercentage = document.getElementById("progress-percentage");
-const progressMessage = document.getElementById("progress-message");
-const breakfastCalories = document.getElementById("breakfast-calories");
-const lunchCalories = document.getElementById("lunch-calories");
-const dinnerCalories = document.getElementById("dinner-calories");
-const snackCalories = document.getElementById("snack-calories");
-const themeToggle = document.getElementById("theme-toggle");
-const selectedDate = document.getElementById("selected-date");
-const todayBtn = document.getElementById("today-btn");
-const historyMessage = document.getElementById("history-message");
-const cancelEditBtn = document.getElementById("cancel-edit-btn");
-const formHeading = document.getElementById("form-heading");
-
-selectedDate.value = getTodayDate();
-dailyGoalElement.textContent = dailyGoal;
-
-function applyTheme(isDark) {
-    document.body.classList.toggle("dark-mode", isDark);
-    themeToggle.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
-    themeToggle.setAttribute("aria-pressed", String(isDark));
-    themeToggle.setAttribute(
-        "aria-label",
-        isDark ? "Switch to light mode" : "Switch to dark mode"
-    );
-
-    try {
-        localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
-    } catch (error) {
-        console.error("Unable to save theme preference:", error);
-    }
-}
-
-function loadTheme() {
-    try {
-        return localStorage.getItem("calorieTrackerTheme") === "dark";
-    } catch (error) {
-        console.error("Unable to load theme preference:", error);
-        return false;
-    }
-}
-
-themeToggle.addEventListener("click", function() {
-    applyTheme(!document.body.classList.contains("dark-mode"));
-});
-
-applyTheme(loadTheme());
 
 function saveFoodItems() {
     try {
         localStorage.setItem("foodItems", JSON.stringify(foodItems));
         return true;
     } catch (error) {
-        console.error("Unable to save food records:", error);
-        statusMessage.textContent = "Unable to save records. Check browser storage.";
+        showStatus("Unable to save data in Local Storage.", true);
         return false;
     }
 }
@@ -129,310 +59,544 @@ function getSelectedDateItems() {
     });
 }
 
+function showStatus(message, isError = false) {
+    const statusMessage = document.getElementById("status-message");
+    statusMessage.textContent = message;
+    statusMessage.style.color = isError ? "var(--danger)" : "var(--success)";
+}
+
 function displayFoodItems() {
-    foodList.innerHTML = "";
+    foodList.replaceChildren();
 
-    let searchValue = searchFood.value.trim().toLowerCase();
-    let filterValue = filterMeal.value;
-    let dateItems = getSelectedDateItems();
+    const selectedItems = getSelectedDateItems();
+    const searchValue = searchFood.value.trim().toLowerCase();
+    const filterValue = filterMeal.value;
 
-    let filteredItems = dateItems.filter(function(item) {
-        let matchesSearch = item.name.toLowerCase().includes(searchValue);
-        let matchesFilter = filterValue === "all" || item.meal === filterValue;
+    const filteredItems = selectedItems.filter(function(item) {
+        const matchesSearch = item.name.toLowerCase().includes(searchValue);
+        const matchesMeal = filterValue === "All" || item.meal === filterValue;
 
-        return matchesSearch && matchesFilter;
+        return matchesSearch && matchesMeal;
     });
 
-    if (filteredItems.length === 0) {
-        emptyState.textContent = dateItems.length === 0
-            ? "No food records available for this date."
-            : "No food records match your search or filter.";
-        emptyState.style.display = "block";
-    } else {
-        emptyState.style.display = "none";
-    }
-
     filteredItems.forEach(function(item) {
-        let row = document.createElement("tr");
+        const row = document.createElement("tr");
 
-        let foodCell = document.createElement("td");
-        foodCell.textContent = item.name;
+        const nameCell = document.createElement("td");
+        nameCell.textContent = item.name;
 
-        let mealCell = document.createElement("td");
+        const mealCell = document.createElement("td");
         mealCell.textContent = item.meal;
 
-        let calorieCell = document.createElement("td");
-        calorieCell.textContent = item.calories + " kcal";
+        const caloriesCell = document.createElement("td");
+        caloriesCell.textContent = `${item.calories} kcal`;
 
-        let actionCell = document.createElement("td");
-        actionCell.classList.add("action-cell");
+        const actionCell = document.createElement("td");
+        const actionButtons = document.createElement("div");
+        actionButtons.className = "action-buttons";
 
-        let editButton = document.createElement("button");
+        const editButton = document.createElement("button");
         editButton.textContent = "Edit";
-        editButton.classList.add("edit-btn");
         editButton.addEventListener("click", function() {
             editFood(item.id);
         });
 
-        let deleteButton = document.createElement("button");
+        const deleteButton = document.createElement("button");
         deleteButton.textContent = "Delete";
-        deleteButton.classList.add("delete-btn");
+        deleteButton.className = "delete-btn";
         deleteButton.addEventListener("click", function() {
             deleteFood(item.id);
         });
 
-        actionCell.appendChild(editButton);
-        actionCell.appendChild(deleteButton);
-
-        row.appendChild(foodCell);
-        row.appendChild(mealCell);
-        row.appendChild(calorieCell);
-        row.appendChild(actionCell);
-
+        actionButtons.append(editButton, deleteButton);
+        actionCell.appendChild(actionButtons);
+        row.append(nameCell, mealCell, caloriesCell, actionCell);
         foodList.appendChild(row);
     });
 
-    historyMessage.textContent = "Showing food records for " + selectedDate.value + ".";
+    document.getElementById("empty-message").classList.toggle(
+        "hidden",
+        filteredItems.length > 0
+    );
+
     updateTotal();
     updateMealSummary();
+    updateHistoryMessage();
+}
+
+function updateTotal() {
+    const items = getSelectedDateItems();
+
+    const total = items.reduce(function(sum, item) {
+        return sum + item.calories;
+    }, 0);
+
+    const remaining = dailyGoal - total;
+    const percentage = Math.round((total / dailyGoal) * 100);
+
+    document.getElementById("daily-goal").textContent = `${dailyGoal} kcal`;
+    document.getElementById("total-calories").textContent = `${total} kcal`;
+    document.getElementById("remaining-calories").textContent =
+        `${Math.abs(remaining)} kcal${remaining < 0 ? " over" : ""}`;
+
+    document.getElementById("table-total").textContent = `${total} kcal`;
+    document.getElementById("progress-percent").textContent = `${percentage}%`;
+
+    const progressBar = document.getElementById("progress-bar");
+    progressBar.style.width = `${Math.min(percentage, 100)}%`;
+
+    document.getElementById("goal-message").textContent =
+        total === 0
+            ? "Start adding your food!"
+            : remaining > 0
+                ? `${remaining} kcal remaining for your daily goal.`
+                : remaining === 0
+                    ? "Daily calorie goal achieved!"
+                    : `${Math.abs(remaining)} kcal above your daily goal.`;
+
+    progressBar.style.background =
+        total > dailyGoal ? "var(--danger)" : "var(--success)";
+}
+
+function updateMealSummary() {
+    const items = getSelectedDateItems();
+    const meals = ["Breakfast", "Lunch", "Dinner", "Snack"];
+
+    meals.forEach(function(meal) {
+        const total = items
+            .filter(function(item) {
+                return item.meal === meal;
+            })
+            .reduce(function(sum, item) {
+                return sum + item.calories;
+            }, 0);
+
+        document.getElementById(
+            `${meal.toLowerCase()}-calories`
+        ).textContent = `${total} kcal`;
+    });
+}
+
+function updateHistoryMessage() {
+    const message = document.getElementById("history-message");
+
+    message.textContent = selectedDate.value === getTodayDate()
+        ? "Showing today's food records."
+        : `Showing food records for ${selectedDate.value}.`;
 }
 
 function resetFoodForm() {
-    editId = null;
     foodForm.reset();
-    addFoodBtn.textContent = "Add Food";
-    formHeading.textContent = "Add Food";
-    cancelEditBtn.hidden = true;
+    editId = null;
+
+    document.getElementById("form-heading").textContent = "Add Food";
+    document.getElementById("submit-btn").textContent = "Add Food";
+    document.getElementById("cancel-edit-btn").classList.add("hidden");
 }
 
 function addFood(event) {
     event.preventDefault();
 
-    let name = foodName.value.trim();
-    let meal = mealType.value;
-    let calorieValue = Number(calories.value);
-    let foodDate = selectedDate.value;
+    const name = foodName.value.trim();
+    const meal = mealType.value;
+    const calories = Number(foodCalories.value);
 
-    if (!foodDate) {
-        statusMessage.textContent = "Please select a date.";
+    if (!name || !Number.isFinite(calories) || calories <= 0) {
+        showStatus("Please enter a valid food name and calorie amount.", true);
         return;
     }
 
-    if (name === "") {
-        statusMessage.textContent = "Please enter food name.";
-        return;
-    }
+    const previousItems = [...foodItems];
 
-    if (name.length < 2) {
-        statusMessage.textContent = "Food name must contain at least 2 characters.";
-        return;
-    }
+    if (editId !== null) {
+        foodItems = foodItems.map(function(item) {
+            if (item.id === editId) {
+                return {
+                    ...item,
+                    name: name,
+                    meal: meal,
+                    calories: calories
+                };
+            }
 
-    if (meal === "") {
-        statusMessage.textContent = "Please select a meal type.";
-        return;
-    }
-
-    if (
-        calories.value.trim() === "" ||
-        !Number.isFinite(calorieValue) ||
-        calorieValue <= 0 ||
-        !Number.isInteger(calorieValue)
-    ) {
-        statusMessage.textContent = "Please enter valid whole-number calories.";
-        return;
-    }
-
-    if (editId === null) {
-        let newFood = {
+            return item;
+        });
+    } else {
+        foodItems.push({
             id: Date.now(),
             name: name,
             meal: meal,
-            calories: calorieValue,
-            date: foodDate
-        };
-
-        foodItems.push(newFood);
-
-        if (!saveFoodItems()) {
-            foodItems.pop();
-            displayFoodItems();
-            return;
-        }
-
-        statusMessage.textContent = "Food record added successfully.";
-    } else {
-        let food = foodItems.find(function(item) {
-            return item.id === editId;
+            calories: calories,
+            date: selectedDate.value
         });
-
-        if (!food) {
-            resetFoodForm();
-            statusMessage.textContent = "Food record not found.";
-            return;
-        }
-
-        let previousFood = {
-            id: food.id,
-            name: food.name,
-            meal: food.meal,
-            calories: food.calories,
-            date: food.date
-        };
-
-        food.name = name;
-        food.meal = meal;
-        food.calories = calorieValue;
-        food.date = foodDate;
-
-        if (!saveFoodItems()) {
-            Object.assign(food, previousFood);
-            displayFoodItems();
-            return;
-        }
-
-        statusMessage.textContent = "Food record updated successfully.";
     }
 
+    if (!saveFoodItems()) {
+        foodItems = previousItems;
+        return;
+    }
+
+    showStatus(editId !== null ? "Food updated successfully!" : "Food added successfully!");
     resetFoodForm();
     displayFoodItems();
+    updateReports();
 }
 
 function editFood(id) {
-    let food = foodItems.find(function(item) {
-        return item.id === id;
+    const item = foodItems.find(function(food) {
+        return food.id === id;
     });
 
-    if (!food) {
-        statusMessage.textContent = "Food record not found.";
-        return;
-    }
+    if (!item) return;
 
-    foodName.value = food.name;
-    mealType.value = food.meal;
-    calories.value = food.calories;
-    selectedDate.value = food.date;
     editId = id;
-    addFoodBtn.textContent = "Update Food";
-    formHeading.textContent = "Edit Food";
-    cancelEditBtn.hidden = false;
-    statusMessage.textContent = "";
+    foodName.value = item.name;
+    mealType.value = item.meal;
+    foodCalories.value = item.calories;
 
-    displayFoodItems();
-    foodName.focus();
+    document.getElementById("form-heading").textContent = "Edit Food";
+    document.getElementById("submit-btn").textContent = "Update Food";
+    document.getElementById("cancel-edit-btn").classList.remove("hidden");
+
+    document.getElementById("food-form").scrollIntoView({
+        behavior: "smooth"
+    });
 }
 
 function deleteFood(id) {
-    let deletedIndex = foodItems.findIndex(function(item) {
-        return item.id === id;
+    const item = foodItems.find(function(food) {
+        return food.id === id;
     });
 
-    if (deletedIndex === -1) {
-        return;
-    }
+    if (!item) return;
 
-    let deletedFood = foodItems[deletedIndex];
-    foodItems.splice(deletedIndex, 1);
+    const previousItems = [...foodItems];
+    foodItems = foodItems.filter(function(food) {
+        return food.id !== id;
+    });
 
     if (!saveFoodItems()) {
-        foodItems.splice(deletedIndex, 0, deletedFood);
-        displayFoodItems();
+        foodItems = previousItems;
         return;
     }
 
-    if (editId === id) {
-        resetFoodForm();
-    }
+    deletedItem = item;
+    document.getElementById("undo-container").classList.remove("hidden");
 
+    showStatus("Food deleted. You can undo this action.");
     displayFoodItems();
-    statusMessage.textContent = "Food record deleted successfully.";
+    updateReports();
 }
 
-function updateTotal() {
-    let total = 0;
+function undoDelete() {
+    if (!deletedItem) return;
 
-    getSelectedDateItems().forEach(function(item) {
-        total += item.calories;
+    foodItems.push(deletedItem);
+
+    if (!saveFoodItems()) {
+        foodItems.pop();
+        return;
+    }
+
+    deletedItem = null;
+    document.getElementById("undo-container").classList.add("hidden");
+
+    showStatus("Deleted food restored successfully!");
+    displayFoodItems();
+    updateReports();
+}
+
+function exportCSV() {
+    const items = getSelectedDateItems();
+
+    if (items.length === 0) {
+        showStatus("No food records available to export.", true);
+        return;
+    }
+
+    const rows = [
+        ["Food Name", "Meal Type", "Calories", "Date"],
+        ...items.map(function(item) {
+            return [
+                item.name,
+                item.meal,
+                item.calories,
+                item.date
+            ];
+        })
+    ];
+
+    const csvContent = rows.map(function(row) {
+        return row.map(function(value) {
+            return `"${String(value).replace(/"/g, '""')}"`;
+        }).join(",");
+    }).join("\n");
+
+    const blob = new Blob([csvContent], {
+        type: "text/csv;charset=utf-8;"
     });
 
-    let remaining = dailyGoal - total;
-    let percentage = Math.round((total / dailyGoal) * 100);
-    let barWidth = Math.min(percentage, 100);
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
 
-    totalCalories.textContent = total;
-    dailyTotal.textContent = total;
+    link.href = url;
+    link.download = `calorie-records-${selectedDate.value}.csv`;
+    link.click();
 
-    if (remaining >= 0) {
-        remainingCalories.textContent = remaining + " kcal";
-    } else {
-        remainingCalories.textContent = "Exceeded by " + Math.abs(remaining) + " kcal";
-    }
-
-    progressBar.style.width = barWidth + "%";
-    progressPercentage.textContent = percentage + "%";
-    progressTrack.setAttribute("aria-valuenow", barWidth);
-
-    if (total > dailyGoal) {
-        progressBar.classList.add("exceeded");
-        progressMessage.textContent =
-            "You have exceeded your daily goal by " + Math.abs(remaining) + " kcal.";
-    } else {
-        progressBar.classList.remove("exceeded");
-        progressMessage.textContent =
-            "You have consumed " + percentage + "% of your daily goal.";
-    }
+    URL.revokeObjectURL(url);
+    showStatus("CSV file exported successfully!");
 }
 
-function updateMealSummary() {
-    let breakfastTotal = 0;
-    let lunchTotal = 0;
-    let dinnerTotal = 0;
-    let snackTotal = 0;
+function getDateTotal(date) {
+    return foodItems
+        .filter(function(item) {
+            return item.date === date;
+        })
+        .reduce(function(sum, item) {
+            return sum + item.calories;
+        }, 0);
+}
 
-    getSelectedDateItems().forEach(function(item) {
-        if (item.meal === "Breakfast") {
-            breakfastTotal += item.calories;
-        } else if (item.meal === "Lunch") {
-            lunchTotal += item.calories;
-        } else if (item.meal === "Dinner") {
-            dinnerTotal += item.calories;
-        } else if (item.meal === "Snack") {
-            snackTotal += item.calories;
+function formatDate(date) {
+    return date.toLocaleDateString("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function updateWeeklyReport() {
+    const selected = new Date(`${selectedDate.value}T00:00:00`);
+    const dayOfWeek = selected.getDay();
+
+    const startDate = new Date(selected);
+    startDate.setDate(selected.getDate() - dayOfWeek);
+
+    const dates = [];
+
+    for (let i = 0; i < 7; i++) {
+        const date = new Date(startDate);
+        date.setDate(startDate.getDate() + i);
+
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+
+        dates.push(`${year}-${month}-${day}`);
+    }
+
+    const totals = dates.map(getDateTotal);
+    const total = totals.reduce(function(sum, value) {
+        return sum + value;
+    }, 0);
+
+    const average = Math.round(total / 7);
+    const highest = Math.max(...totals);
+    const highestIndex = totals.indexOf(highest);
+
+    document.getElementById("weekly-date-range").textContent =
+        `${formatDate(new Date(`${dates[0]}T00:00:00`))} - ${formatDate(new Date(`${dates[6]}T00:00:00`))}`;
+
+    document.getElementById("weekly-total").textContent = `${total} kcal`;
+    document.getElementById("weekly-average").textContent = `${average} kcal`;
+
+    document.getElementById("weekly-highest").textContent =
+        `${highest} kcal`;
+
+    document.getElementById("weekly-highest-date").textContent =
+        highest > 0
+            ? formatDate(new Date(`${dates[highestIndex]}T00:00:00`))
+            : "No records";
+
+    const chart = document.getElementById("weekly-chart");
+    chart.replaceChildren();
+
+    dates.forEach(function(date, index) {
+        const column = document.createElement("div");
+        column.className = "bar-column";
+
+        const value = document.createElement("span");
+        value.className = "bar-value";
+        value.textContent = totals[index];
+
+        const bar = document.createElement("div");
+        bar.className = "bar";
+        bar.style.height = `${Math.max((totals[index] / Math.max(highest, 1)) * 100, 2)}%`;
+
+        const label = document.createElement("span");
+        label.className = "bar-label";
+        label.textContent = new Date(`${date}T00:00:00`)
+            .toLocaleDateString("en-IN", { weekday: "short" });
+
+        column.append(value, bar, label);
+        chart.appendChild(column);
+    });
+
+    const list = document.getElementById("weekly-list");
+    list.replaceChildren();
+
+    dates.forEach(function(date, index) {
+        const row = document.createElement("div");
+        row.className = "report-row";
+
+        const dateLabel = document.createElement("span");
+        dateLabel.textContent = formatDate(new Date(`${date}T00:00:00`));
+
+        const calorieLabel = document.createElement("strong");
+        calorieLabel.textContent = `${totals[index]} kcal`;
+
+        row.append(dateLabel, calorieLabel);
+        list.appendChild(row);
+    });
+}
+
+function updateMonthlyReport() {
+    const monthValue = document.getElementById("monthly-month").value;
+    if (!monthValue) return;
+
+    const [year, month] = monthValue.split("-").map(Number);
+    const daysInMonth = new Date(year, month, 0).getDate();
+
+    const dates = [];
+
+    for (let day = 1; day <= daysInMonth; day++) {
+        const date = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+        dates.push(date);
+    }
+
+    const totals = dates.map(getDateTotal);
+    const total = totals.reduce(function(sum, value) {
+        return sum + value;
+    }, 0);
+
+    const daysWithRecords = totals.filter(function(value) {
+        return value > 0;
+    }).length;
+
+    const average = daysWithRecords > 0
+        ? Math.round(total / daysWithRecords)
+        : 0;
+
+    const highest = Math.max(...totals);
+    const highestIndex = totals.indexOf(highest);
+
+    const goalDays = totals.filter(function(value) {
+        return value >= dailyGoal;
+    }).length;
+
+    document.getElementById("monthly-total").textContent = `${total} kcal`;
+    document.getElementById("monthly-average").textContent = `${average} kcal`;
+
+    document.getElementById("monthly-highest").textContent =
+        `${highest} kcal`;
+
+    document.getElementById("monthly-highest-date").textContent =
+        highest > 0
+            ? formatDate(new Date(`${dates[highestIndex]}T00:00:00`))
+            : "No records";
+
+    document.getElementById("monthly-goal-days").textContent =
+        `${goalDays} days`;
+
+    const chart = document.getElementById("monthly-chart");
+    chart.replaceChildren();
+
+    const hasRecords = daysWithRecords > 0;
+    document.getElementById("monthly-empty").classList.toggle(
+        "hidden",
+        hasRecords
+    );
+
+    dates.forEach(function(date, index) {
+        const day = document.createElement("div");
+        day.className = "month-day";
+
+        const value = document.createElement("span");
+        value.className = "month-day-value";
+        value.textContent = totals[index] > 0 ? totals[index] : "";
+
+        const track = document.createElement("div");
+        track.className = "month-bar-track";
+
+        const bar = document.createElement("div");
+        bar.className = "month-bar";
+
+        if (totals[index] >= dailyGoal) {
+            bar.classList.add("goal-met");
         }
+
+        const height = highest > 0
+            ? (totals[index] / highest) * 100
+            : 0;
+
+        bar.style.height = `${height}%`;
+        bar.title = `${date}: ${totals[index]} kcal`;
+
+        track.appendChild(bar);
+
+        const dayNumber = document.createElement("span");
+        dayNumber.className = "month-day-number";
+        dayNumber.textContent = index + 1;
+
+        day.append(value, track, dayNumber);
+        chart.appendChild(day);
     });
-
-    breakfastCalories.textContent = breakfastTotal;
-    lunchCalories.textContent = lunchTotal;
-    dinnerCalories.textContent = dinnerTotal;
-    snackCalories.textContent = snackTotal;
 }
 
-function changeSelectedDate() {
-    resetFoodForm();
-    statusMessage.textContent = "";
-    displayFoodItems();
+function updateReports() {
+    updateWeeklyReport();
+    updateMonthlyReport();
 }
 
-selectedDate.addEventListener("change", changeSelectedDate);
+function applyTheme(isDark) {
+    document.body.classList.toggle("dark-mode", isDark);
 
-todayBtn.addEventListener("click", function() {
-    selectedDate.value = getTodayDate();
-    changeSelectedDate();
-});
+    document.getElementById("theme-toggle").textContent =
+        isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+}
 
-cancelEditBtn.addEventListener("click", function() {
-    resetFoodForm();
-    statusMessage.textContent = "";
+function loadTheme() {
+    const savedTheme = localStorage.getItem("calorieTrackerTheme");
+    applyTheme(savedTheme === "dark");
+}
+
+document.getElementById("theme-toggle").addEventListener("click", function() {
+    const isDark = !document.body.classList.contains("dark-mode");
+
+    applyTheme(isDark);
+    localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
 });
 
 foodForm.addEventListener("submit", addFood);
+
+document.getElementById("cancel-edit-btn").addEventListener("click", resetFoodForm);
+
+document.getElementById("today-btn").addEventListener("click", function() {
+    selectedDate.value = getTodayDate();
+    searchFood.value = "";
+    filterMeal.value = "All";
+
+    displayFoodItems();
+    updateReports();
+});
+
+selectedDate.addEventListener("change", function() {
+    resetFoodForm();
+    displayFoodItems();
+    updateReports();
+});
+
 searchFood.addEventListener("input", displayFoodItems);
 filterMeal.addEventListener("change", displayFoodItems);
 
-displayFoodItems();
+document.getElementById("export-csv-btn").addEventListener("click", exportCSV);
+document.getElementById("undo-btn").addEventListener("click", undoDelete);
 
-if (foodItems.some(function(item) {
-    return !item.date;
-})) {
-    saveFoodItems();
-}
+document.getElementById("monthly-month").addEventListener("change", updateMonthlyReport);
+
+selectedDate.value = getTodayDate();
+document.getElementById("monthly-month").value = getTodayDate().slice(0, 7);
+
+loadTheme();
+displayFoodItems();
+updateReports();
