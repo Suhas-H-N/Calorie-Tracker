@@ -189,6 +189,20 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(82, 103, 223, 0.12);
 }
 
+.goal-form {
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+.goal-form div {
+    flex: 1;
+}
+
+.goal-form button {
+    min-height: 43px;
+}
+
 .form-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
@@ -454,6 +468,11 @@ th {
     .form-grid,
     .filter-grid {
         grid-template-columns: 1fr;
+    }
+
+    .goal-form {
+        align-items: stretch;
+        flex-direction: column;
     }
 
     .section-heading {
