@@ -1,4 +1,5 @@
 const foodForm = document.getElementById("food-form");
+const goalForm = document.getElementById("goal-form");
 const foodName = document.getElementById("food-name");
 const mealType = document.getElementById("meal-type");
 const foodCalories = document.getElementById("food-calories");
@@ -6,9 +7,12 @@ const foodList = document.getElementById("food-list");
 const selectedDate = document.getElementById("selected-date");
 const searchFood = document.getElementById("search-food");
 const filterMeal = document.getElementById("filter-meal");
+const goalInput = document.getElementById("goal-input");
 
-const dailyGoal = 2000;
+const DEFAULT_GOAL = 2000;
+
 let foodItems = loadFoodItems();
+let dailyGoal = loadDailyGoal();
 let editId = null;
 let deletedItem = null;
 
@@ -43,12 +47,32 @@ function loadFoodItems() {
     }
 }
 
+function loadDailyGoal() {
+    const savedGoal = Number(localStorage.getItem("dailyCalorieGoal"));
+
+    if (Number.isInteger(savedGoal) && savedGoal >= 1 && savedGoal <= 100000) {
+        return savedGoal;
+    }
+
+    return DEFAULT_GOAL;
+}
+
 function saveFoodItems() {
     try {
         localStorage.setItem("foodItems", JSON.stringify(foodItems));
         return true;
     } catch (error) {
         showStatus("Unable to save data in Local Storage.", true);
+        return false;
+    }
+}
+
+function saveDailyGoal() {
+    try {
+        localStorage.setItem("dailyCalorieGoal", String(dailyGoal));
+        return true;
+    } catch (error) {
+        showGoalStatus("Unable to save your calorie goal.", true);
         return false;
     }
 }
@@ -63,6 +87,12 @@ function showStatus(message, isError = false) {
     const statusMessage = document.getElementById("status-message");
     statusMessage.textContent = message;
     statusMessage.style.color = isError ? "var(--danger)" : "var(--success)";
+}
+
+function showGoalStatus(message, isError = false) {
+    const status = document.getElementById("goal-status");
+    status.textContent = message;
+    status.style.color = isError ? "var(--danger)" : "var(--success)";
 }
 
 function displayFoodItems() {
@@ -136,6 +166,7 @@ function updateTotal() {
 
     document.getElementById("daily-goal").textContent = `${dailyGoal} kcal`;
     document.getElementById("total-calories").textContent = `${total} kcal`;
+
     document.getElementById("remaining-calories").textContent =
         `${Math.abs(remaining)} kcal${remaining < 0 ? " over" : ""}`;
 
@@ -271,6 +302,7 @@ function deleteFood(id) {
     if (!item) return;
 
     const previousItems = [...foodItems];
+
     foodItems = foodItems.filter(function(food) {
         return food.id !== id;
     });
@@ -303,6 +335,31 @@ function undoDelete() {
 
     showStatus("Deleted food restored successfully!");
     displayFoodItems();
+    updateReports();
+}
+
+function updateDailyGoal(event) {
+    event.preventDefault();
+
+    const newGoal = Number(goalInput.value);
+
+    if (!Number.isInteger(newGoal) || newGoal < 1 || newGoal > 100000) {
+        showGoalStatus("Enter a whole number between 1 and 100000.", true);
+        return;
+    }
+
+    const previousGoal = dailyGoal;
+    dailyGoal = newGoal;
+
+    if (!saveDailyGoal()) {
+        dailyGoal = previousGoal;
+        return;
+    }
+
+    goalInput.value = dailyGoal;
+
+    showGoalStatus("Your daily calorie goal has been updated successfully!");
+    updateTotal();
     updateReports();
 }
 
@@ -399,9 +456,7 @@ function updateWeeklyReport() {
 
     document.getElementById("weekly-total").textContent = `${total} kcal`;
     document.getElementById("weekly-average").textContent = `${average} kcal`;
-
-    document.getElementById("weekly-highest").textContent =
-        `${highest} kcal`;
+    document.getElementById("weekly-highest").textContent = `${highest} kcal`;
 
     document.getElementById("weekly-highest-date").textContent =
         highest > 0
@@ -486,9 +541,7 @@ function updateMonthlyReport() {
 
     document.getElementById("monthly-total").textContent = `${total} kcal`;
     document.getElementById("monthly-average").textContent = `${average} kcal`;
-
-    document.getElementById("monthly-highest").textContent =
-        `${highest} kcal`;
+    document.getElementById("monthly-highest").textContent = `${highest} kcal`;
 
     document.getElementById("monthly-highest-date").textContent =
         highest > 0
@@ -502,6 +555,7 @@ function updateMonthlyReport() {
     chart.replaceChildren();
 
     const hasRecords = daysWithRecords > 0;
+
     document.getElementById("monthly-empty").classList.toggle(
         "hidden",
         hasRecords
@@ -521,7 +575,7 @@ function updateMonthlyReport() {
         const bar = document.createElement("div");
         bar.className = "month-bar";
 
-        if (totals[index] >= dailyGoal) {
+        if (totals[index] >= dailyGoal && totals[index] > 0) {
             bar.classList.add("goal-met");
         }
 
@@ -568,6 +622,7 @@ document.getElementById("theme-toggle").addEventListener("click", function() {
 });
 
 foodForm.addEventListener("submit", addFood);
+goalForm.addEventListener("submit", updateDailyGoal);
 
 document.getElementById("cancel-edit-btn").addEventListener("click", resetFoodForm);
 
@@ -596,6 +651,7 @@ document.getElementById("monthly-month").addEventListener("change", updateMonthl
 
 selectedDate.value = getTodayDate();
 document.getElementById("monthly-month").value = getTodayDate().slice(0, 7);
+goalInput.value = dailyGoal;
 
 loadTheme();
 displayFoodItems();
