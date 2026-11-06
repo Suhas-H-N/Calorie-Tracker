@@ -154,17 +154,33 @@ function displayFoodItems() {
     updateHistoryMessage();
 }
 
-function updateTotal() {
-    const items = getSelectedDateItems();
+function getSafeDailyGoal(goal) {
+    const parsedGoal = Number(goal);
 
+    if (Number.isInteger(parsedGoal) && parsedGoal >= 1 && parsedGoal <= 100000) {
+        return parsedGoal;
+    }
+
+    return DEFAULT_GOAL;
+}
+
+function updateTotal() {
+    const safeDailyGoal = getSafeDailyGoal(dailyGoal);
+
+    if (safeDailyGoal !== dailyGoal) {
+        dailyGoal = safeDailyGoal;
+        saveDailyGoal();
+    }
+
+    const items = getSelectedDateItems();
     const total = items.reduce(function(sum, item) {
         return sum + item.calories;
     }, 0);
 
-    const remaining = dailyGoal - total;
-    const percentage = Math.round((total / dailyGoal) * 100);
+    const remaining = safeDailyGoal - total;
+    const percentage = Math.round((total / safeDailyGoal) * 100);
 
-    document.getElementById("daily-goal").textContent = `${dailyGoal} kcal`;
+    document.getElementById("daily-goal").textContent = `${safeDailyGoal} kcal`;
     document.getElementById("total-calories").textContent = `${total} kcal`;
 
     document.getElementById("remaining-calories").textContent =
@@ -186,7 +202,7 @@ function updateTotal() {
                     : `${Math.abs(remaining)} kcal above your daily goal.`;
 
     progressBar.style.background =
-        total > dailyGoal ? "var(--danger)" : "var(--success)";
+        total > safeDailyGoal ? "var(--danger)" : "var(--success)";
 }
 
 function updateMealSummary() {
@@ -610,15 +626,24 @@ function applyTheme(isDark) {
 }
 
 function loadTheme() {
-    const savedTheme = localStorage.getItem("calorieTrackerTheme");
-    applyTheme(savedTheme === "dark");
+    try {
+        const savedTheme = localStorage.getItem("calorieTrackerTheme");
+        applyTheme(savedTheme === "dark");
+    } catch (error) {
+        applyTheme(false);
+    }
 }
 
 document.getElementById("theme-toggle").addEventListener("click", function() {
     const isDark = !document.body.classList.contains("dark-mode");
 
     applyTheme(isDark);
-    localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
+
+    try {
+        localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
+    } catch (error) {
+        // Ignore storage access errors when the browser blocks localStorage.
+    }
 });
 
 foodForm.addEventListener("submit", addFood);
@@ -656,3 +681,61 @@ goalInput.value = dailyGoal;
 loadTheme();
 displayFoodItems();
 updateReports();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"}]}
