@@ -98,7 +98,8 @@ select {
     margin-bottom: 16px;
 }
 
-.section-heading h2 {
+.section-heading h2,
+.section-heading h3 {
     margin: 0;
 }
 
@@ -157,12 +158,20 @@ select {
     overflow: hidden;
 }
 
-.progress-bar {
+.progress-bar,
+.water-progress-bar {
     width: 0;
     height: 100%;
-    background: var(--success);
     border-radius: 20px;
     transition: width 0.3s;
+}
+
+.progress-bar {
+    background: var(--success);
+}
+
+.water-progress-bar {
+    background: #27a9d8;
 }
 
 label {
@@ -189,17 +198,20 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(82, 103, 223, 0.12);
 }
 
-.goal-form {
+.goal-form,
+.water-custom-form {
     display: flex;
     align-items: flex-end;
     gap: 12px;
 }
 
-.goal-form div {
+.goal-form div,
+.water-custom-form div {
     flex: 1;
 }
 
-.goal-form button {
+.goal-form button,
+.water-custom-form button {
     min-height: 43px;
 }
 
@@ -284,6 +296,7 @@ th {
 
 .delete-btn {
     background: var(--danger);
+    color: #ffffff;
 }
 
 .delete-btn:hover {
@@ -443,6 +456,76 @@ th {
     overflow-wrap: anywhere;
 }
 
+/* Water Intake Tracker */
+
+.water-summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 20px 0;
+}
+
+.water-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    background: var(--soft);
+    border-radius: 10px;
+}
+
+.water-stat span {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.water-stat strong {
+    font-size: 21px;
+}
+
+.water-entry {
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+.water-entry h3 {
+    margin: 0 0 14px;
+}
+
+.water-quick-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.water-add-btn {
+    background: #168fc2;
+}
+
+.water-add-btn:hover {
+    background: #0876a5;
+}
+
+.water-history-heading {
+    margin-top: 25px;
+}
+
+.water-history-heading h3 {
+    margin: 0;
+}
+
+.water-delete-btn {
+    background: var(--danger);
+    padding: 7px 10px;
+    font-size: 12px;
+}
+
+.water-delete-btn:hover {
+    background: #c83d3d;
+}
+
 @media (max-width: 700px) {
     body {
         padding: 14px;
@@ -457,7 +540,8 @@ th {
     }
 
     .summary-grid,
-    .report-grid {
+    .report-grid,
+    .water-summary {
         grid-template-columns: 1fr 1fr;
     }
 
@@ -470,7 +554,8 @@ th {
         grid-template-columns: 1fr;
     }
 
-    .goal-form {
+    .goal-form,
+    .water-custom-form {
         align-items: stretch;
         flex-direction: column;
     }
@@ -491,11 +576,16 @@ th {
     .month-day-value {
         font-size: 9px;
     }
+
+    .water-history-heading {
+        flex-direction: column;
+    }
 }
 
 @media (max-width: 420px) {
     .summary-grid,
-    .report-grid {
+    .report-grid,
+    .water-summary {
         grid-template-columns: 1fr;
     }
 
