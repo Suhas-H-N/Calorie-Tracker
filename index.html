@@ -88,6 +88,80 @@
         </section>
 
         <section class="card">
+            <h2>Water Intake Tracker 💧</h2>
+
+            <form id="water-goal-form" class="goal-form">
+                <div>
+                    <label for="water-goal-input">Daily Water Goal (ml)</label>
+                    <input type="number" id="water-goal-input" min="1" max="20000" placeholder="Example: 2000" required>
+                </div>
+                <button type="submit">Save Water Goal</button>
+            </form>
+            <p id="water-goal-status" class="status-message" aria-live="polite"></p>
+
+            <div class="water-summary">
+                <div class="water-stat">
+                    <span>Daily Goal</span>
+                    <strong id="water-goal-display">2000 ml</strong>
+                </div>
+                <div class="water-stat">
+                    <span>Consumed</span>
+                    <strong id="water-consumed">0 ml</strong>
+                </div>
+                <div class="water-stat">
+                    <span>Remaining</span>
+                    <strong id="water-remaining">2000 ml</strong>
+                </div>
+            </div>
+
+            <div class="progress-info">
+                <span>Water Intake Progress</span>
+                <strong id="water-progress-percent">0%</strong>
+            </div>
+            <div class="progress-track">
+                <div id="water-progress-bar" class="water-progress-bar"></div>
+            </div>
+            <p id="water-progress-message" class="muted">Start tracking your water intake!</p>
+
+            <div class="water-entry">
+                <h3>Add Water</h3>
+                <div class="water-quick-buttons">
+                    <button type="button" class="water-add-btn" data-amount="250">+250 ml</button>
+                    <button type="button" class="water-add-btn" data-amount="500">+500 ml</button>
+                </div>
+
+                <form id="water-form" class="water-custom-form">
+                    <div>
+                        <label for="water-amount">Custom Amount (ml)</label>
+                        <input type="number" id="water-amount" min="1" max="20000" placeholder="Enter amount" required>
+                    </div>
+                    <button type="submit">Add Water</button>
+                </form>
+                <p id="water-status" class="status-message" aria-live="polite"></p>
+            </div>
+
+            <div class="section-heading water-history-heading">
+                <h3>Water Intake History</h3>
+                <button type="button" id="reset-water-btn" class="delete-btn">Reset Today's Water</button>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Water Intake</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="water-list"></tbody>
+                </table>
+            </div>
+            <p id="water-empty-message" class="empty-message">No water records for this date.</p>
+            <p class="daily-total">Total Water: <strong id="water-table-total">0 ml</strong></p>
+        </section>
+
+        <section class="card">
             <h2 id="form-heading">Add Food</h2>
             <form id="food-form">
                 <div class="form-grid">
