@@ -1,5 +1,8 @@
 const foodForm = document.getElementById("food-form");
 const goalForm = document.getElementById("goal-form");
+const waterForm = document.getElementById("water-form");
+const waterGoalForm = document.getElementById("water-goal-form");
+
 const foodName = document.getElementById("food-name");
 const mealType = document.getElementById("meal-type");
 const foodCalories = document.getElementById("food-calories");
@@ -9,12 +12,18 @@ const searchFood = document.getElementById("search-food");
 const filterMeal = document.getElementById("filter-meal");
 const goalInput = document.getElementById("goal-input");
 
+const waterAmount = document.getElementById("water-amount");
+const waterGoalInput = document.getElementById("water-goal-input");
+const waterList = document.getElementById("water-list");
+
 const DEFAULT_GOAL = 2000;
+const DEFAULT_WATER_GOAL = 2000;
 
 let foodItems = loadFoodItems();
 let dailyGoal = loadDailyGoal();
+let waterRecords = loadWaterRecords();
+let waterGoal = loadWaterGoal();
 let editId = null;
-let deletedItem = null;
 
 function getTodayDate() {
     const today = new Date();
@@ -29,9 +38,7 @@ function loadFoodItems() {
     try {
         const savedItems = JSON.parse(localStorage.getItem("foodItems")) || [];
 
-        if (!Array.isArray(savedItems)) {
-            return [];
-        }
+        if (!Array.isArray(savedItems)) return [];
 
         return savedItems.map(function(item) {
             return {
@@ -47,6 +54,28 @@ function loadFoodItems() {
     }
 }
 
+function loadWaterRecords() {
+    try {
+        const savedRecords = JSON.parse(localStorage.getItem("waterRecords")) || [];
+
+        if (!Array.isArray(savedRecords)) return [];
+
+        return savedRecords
+            .filter(function(record) {
+                return record && Number(record.amount) > 0;
+            })
+            .map(function(record) {
+                return {
+                    id: record.id || Date.now() + Math.random(),
+                    amount: Number(record.amount),
+                    date: record.date || getTodayDate()
+                };
+            });
+    } catch (error) {
+        return [];
+    }
+}
+
 function loadDailyGoal() {
     const savedGoal = Number(localStorage.getItem("dailyCalorieGoal"));
 
@@ -57,12 +86,32 @@ function loadDailyGoal() {
     return DEFAULT_GOAL;
 }
 
+function loadWaterGoal() {
+    const savedGoal = Number(localStorage.getItem("dailyWaterGoal"));
+
+    if (Number.isInteger(savedGoal) && savedGoal >= 1 && savedGoal <= 20000) {
+        return savedGoal;
+    }
+
+    return DEFAULT_WATER_GOAL;
+}
+
 function saveFoodItems() {
     try {
         localStorage.setItem("foodItems", JSON.stringify(foodItems));
         return true;
     } catch (error) {
         showStatus("Unable to save data in Local Storage.", true);
+        return false;
+    }
+}
+
+function saveWaterRecords() {
+    try {
+        localStorage.setItem("waterRecords", JSON.stringify(waterRecords));
+        return true;
+    } catch (error) {
+        showWaterStatus("Unable to save water records.", true);
         return false;
     }
 }
@@ -77,9 +126,25 @@ function saveDailyGoal() {
     }
 }
 
+function saveWaterGoal() {
+    try {
+        localStorage.setItem("dailyWaterGoal", String(waterGoal));
+        return true;
+    } catch (error) {
+        showWaterGoalStatus("Unable to save your water goal.", true);
+        return false;
+    }
+}
+
 function getSelectedDateItems() {
     return foodItems.filter(function(item) {
         return item.date === selectedDate.value;
+    });
+}
+
+function getSelectedDateWaterRecords() {
+    return waterRecords.filter(function(record) {
+        return record.date === selectedDate.value;
     });
 }
 
@@ -94,6 +159,20 @@ function showGoalStatus(message, isError = false) {
     status.textContent = message;
     status.style.color = isError ? "var(--danger)" : "var(--success)";
 }
+
+function showWaterStatus(message, isError = false) {
+    const status = document.getElementById("water-status");
+    status.textContent = message;
+    status.style.color = isError ? "var(--danger)" : "var(--success)";
+}
+
+function showWaterGoalStatus(message, isError = false) {
+    const status = document.getElementById("water-goal-status");
+    status.textContent = message;
+    status.style.color = isError ? "var(--danger)" : "var(--success)";
+}
+
+/* Food Tracker */
 
 function displayFoodItems() {
     foodList.replaceChildren();
@@ -154,33 +233,17 @@ function displayFoodItems() {
     updateHistoryMessage();
 }
 
-function getSafeDailyGoal(goal) {
-    const parsedGoal = Number(goal);
-
-    if (Number.isInteger(parsedGoal) && parsedGoal >= 1 && parsedGoal <= 100000) {
-        return parsedGoal;
-    }
-
-    return DEFAULT_GOAL;
-}
-
 function updateTotal() {
-    const safeDailyGoal = getSafeDailyGoal(dailyGoal);
-
-    if (safeDailyGoal !== dailyGoal) {
-        dailyGoal = safeDailyGoal;
-        saveDailyGoal();
-    }
-
     const items = getSelectedDateItems();
+
     const total = items.reduce(function(sum, item) {
         return sum + item.calories;
     }, 0);
 
-    const remaining = safeDailyGoal - total;
-    const percentage = Math.round((total / safeDailyGoal) * 100);
+    const remaining = dailyGoal - total;
+    const percentage = Math.round((total / dailyGoal) * 100);
 
-    document.getElementById("daily-goal").textContent = `${safeDailyGoal} kcal`;
+    document.getElementById("daily-goal").textContent = `${dailyGoal} kcal`;
     document.getElementById("total-calories").textContent = `${total} kcal`;
 
     document.getElementById("remaining-calories").textContent =
@@ -202,7 +265,7 @@ function updateTotal() {
                     : `${Math.abs(remaining)} kcal above your daily goal.`;
 
     progressBar.style.background =
-        total > safeDailyGoal ? "var(--danger)" : "var(--success)";
+        total > dailyGoal ? "var(--danger)" : "var(--success)";
 }
 
 function updateMealSummary() {
@@ -228,8 +291,8 @@ function updateHistoryMessage() {
     const message = document.getElementById("history-message");
 
     message.textContent = selectedDate.value === getTodayDate()
-        ? "Showing today's food records."
-        : `Showing food records for ${selectedDate.value}.`;
+        ? "Showing today's food and water records."
+        : `Showing food and water records for ${selectedDate.value}.`;
 }
 
 function resetFoodForm() {
@@ -305,9 +368,7 @@ function editFood(id) {
     document.getElementById("submit-btn").textContent = "Update Food";
     document.getElementById("cancel-edit-btn").classList.remove("hidden");
 
-    document.getElementById("food-form").scrollIntoView({
-        behavior: "smooth"
-    });
+    foodForm.scrollIntoView({ behavior: "smooth" });
 }
 
 function deleteFood(id) {
@@ -390,12 +451,7 @@ function exportCSV() {
     const rows = [
         ["Food Name", "Meal Type", "Calories", "Date"],
         ...items.map(function(item) {
-            return [
-                item.name,
-                item.meal,
-                item.calories,
-                item.date
-            ];
+            return [item.name, item.meal, item.calories, item.date];
         })
     ];
 
@@ -419,6 +475,194 @@ function exportCSV() {
     URL.revokeObjectURL(url);
     showStatus("CSV file exported successfully!");
 }
+
+/* Water Intake Tracker */
+
+function getWaterTotal() {
+    return getSelectedDateWaterRecords().reduce(function(sum, record) {
+        return sum + record.amount;
+    }, 0);
+}
+
+function updateWaterSummary() {
+    const total = getWaterTotal();
+    const remaining = waterGoal - total;
+    const percentage = Math.round((total / waterGoal) * 100);
+
+    document.getElementById("water-goal-display").textContent =
+        `${waterGoal} ml`;
+
+    document.getElementById("water-consumed").textContent =
+        `${total} ml`;
+
+    document.getElementById("water-remaining").textContent =
+        `${Math.max(remaining, 0)} ml${remaining < 0 ? " over" : ""}`;
+
+    document.getElementById("water-progress-percent").textContent =
+        `${percentage}%`;
+
+    const progressBar = document.getElementById("water-progress-bar");
+
+    progressBar.style.width = `${Math.min(percentage, 100)}%`;
+
+    document.getElementById("water-progress-message").textContent =
+        total === 0
+            ? "Start tracking your water intake!"
+            : remaining > 0
+                ? `${remaining} ml remaining to reach your water goal.`
+                : remaining === 0
+                    ? "Daily water goal achieved!"
+                    : `${Math.abs(remaining)} ml above your water goal.`;
+}
+
+function displayWaterRecords() {
+    waterList.replaceChildren();
+
+    const records = getSelectedDateWaterRecords();
+
+    records.forEach(function(record) {
+        const row = document.createElement("tr");
+
+        const amountCell = document.createElement("td");
+        amountCell.textContent = `${record.amount} ml`;
+
+        const dateCell = document.createElement("td");
+        dateCell.textContent = record.date;
+
+        const actionCell = document.createElement("td");
+        const deleteButton = document.createElement("button");
+
+        deleteButton.textContent = "Delete";
+        deleteButton.className = "water-delete-btn";
+
+        deleteButton.addEventListener("click", function() {
+            deleteWaterRecord(record.id);
+        });
+
+        actionCell.appendChild(deleteButton);
+        row.append(amountCell, dateCell, actionCell);
+
+        waterList.appendChild(row);
+    });
+
+    document.getElementById("water-empty-message").classList.toggle(
+        "hidden",
+        records.length > 0
+    );
+
+    document.getElementById("water-table-total").textContent =
+        `${getWaterTotal()} ml`;
+
+    updateWaterSummary();
+}
+
+function addWater(amount) {
+    if (!Number.isInteger(amount) || amount <= 0 || amount > 20000) {
+        showWaterStatus("Enter a valid water amount between 1 and 20000 ml.", true);
+        return;
+    }
+
+    const record = {
+        id: Date.now() + Math.random(),
+        amount: amount,
+        date: selectedDate.value
+    };
+
+    waterRecords.push(record);
+
+    if (!saveWaterRecords()) {
+        waterRecords.pop();
+        return;
+    }
+
+    showWaterStatus(`${amount} ml of water added successfully!`);
+    displayWaterRecords();
+}
+
+function addCustomWater(event) {
+    event.preventDefault();
+
+    const amount = Number(waterAmount.value);
+
+    if (!Number.isInteger(amount) || amount < 1 || amount > 20000) {
+        showWaterStatus("Enter a whole number between 1 and 20000 ml.", true);
+        return;
+    }
+
+    addWater(amount);
+    waterForm.reset();
+}
+
+function updateWaterGoal(event) {
+    event.preventDefault();
+
+    const newGoal = Number(waterGoalInput.value);
+
+    if (!Number.isInteger(newGoal) || newGoal < 1 || newGoal > 20000) {
+        showWaterGoalStatus("Enter a whole number between 1 and 20000 ml.", true);
+        return;
+    }
+
+    const previousGoal = waterGoal;
+    waterGoal = newGoal;
+
+    if (!saveWaterGoal()) {
+        waterGoal = previousGoal;
+        return;
+    }
+
+    waterGoalInput.value = waterGoal;
+
+    showWaterGoalStatus("Your daily water goal has been updated successfully!");
+    updateWaterSummary();
+}
+
+function deleteWaterRecord(id) {
+    const previousRecords = [...waterRecords];
+
+    waterRecords = waterRecords.filter(function(record) {
+        return record.id !== id;
+    });
+
+    if (!saveWaterRecords()) {
+        waterRecords = previousRecords;
+        return;
+    }
+
+    showWaterStatus("Water record deleted successfully!");
+    displayWaterRecords();
+}
+
+function resetWaterRecords() {
+    const records = getSelectedDateWaterRecords();
+
+    if (records.length === 0) {
+        showWaterStatus("There are no water records to reset.", true);
+        return;
+    }
+
+    const confirmed = confirm(
+        `Are you sure you want to delete all water records for ${selectedDate.value}?`
+    );
+
+    if (!confirmed) return;
+
+    const previousRecords = [...waterRecords];
+
+    waterRecords = waterRecords.filter(function(record) {
+        return record.date !== selectedDate.value;
+    });
+
+    if (!saveWaterRecords()) {
+        waterRecords = previousRecords;
+        return;
+    }
+
+    showWaterStatus("Water records reset successfully!");
+    displayWaterRecords();
+}
+
+/* Weekly and Monthly Reports */
 
 function getDateTotal(date) {
     return foodItems
@@ -492,7 +736,8 @@ function updateWeeklyReport() {
 
         const bar = document.createElement("div");
         bar.className = "bar";
-        bar.style.height = `${Math.max((totals[index] / Math.max(highest, 1)) * 100, 2)}%`;
+        bar.style.height =
+            `${Math.max((totals[index] / Math.max(highest, 1)) * 100, 2)}%`;
 
         const label = document.createElement("span");
         label.className = "bar-label";
@@ -531,8 +776,9 @@ function updateMonthlyReport() {
     const dates = [];
 
     for (let day = 1; day <= daysInMonth; day++) {
-        const date = `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-        dates.push(date);
+        dates.push(
+            `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+        );
     }
 
     const totals = dates.map(getDateTotal);
@@ -618,6 +864,8 @@ function updateReports() {
     updateMonthlyReport();
 }
 
+/* Dark Mode */
+
 function applyTheme(isDark) {
     document.body.classList.toggle("dark-mode", isDark);
 
@@ -626,28 +874,23 @@ function applyTheme(isDark) {
 }
 
 function loadTheme() {
-    try {
-        const savedTheme = localStorage.getItem("calorieTrackerTheme");
-        applyTheme(savedTheme === "dark");
-    } catch (error) {
-        applyTheme(false);
-    }
+    const savedTheme = localStorage.getItem("calorieTrackerTheme");
+    applyTheme(savedTheme === "dark");
 }
 
 document.getElementById("theme-toggle").addEventListener("click", function() {
     const isDark = !document.body.classList.contains("dark-mode");
 
     applyTheme(isDark);
-
-    try {
-        localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
-    } catch (error) {
-        // Ignore storage access errors when the browser blocks localStorage.
-    }
+    localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
 });
+
+/* Event Listeners */
 
 foodForm.addEventListener("submit", addFood);
 goalForm.addEventListener("submit", updateDailyGoal);
+waterForm.addEventListener("submit", addCustomWater);
+waterGoalForm.addEventListener("submit", updateWaterGoal);
 
 document.getElementById("cancel-edit-btn").addEventListener("click", resetFoodForm);
 
@@ -657,12 +900,14 @@ document.getElementById("today-btn").addEventListener("click", function() {
     filterMeal.value = "All";
 
     displayFoodItems();
+    displayWaterRecords();
     updateReports();
 });
 
 selectedDate.addEventListener("change", function() {
     resetFoodForm();
     displayFoodItems();
+    displayWaterRecords();
     updateReports();
 });
 
@@ -671,71 +916,26 @@ filterMeal.addEventListener("change", displayFoodItems);
 
 document.getElementById("export-csv-btn").addEventListener("click", exportCSV);
 document.getElementById("undo-btn").addEventListener("click", undoDelete);
+document.getElementById("reset-water-btn").addEventListener("click", resetWaterRecords);
 
 document.getElementById("monthly-month").addEventListener("change", updateMonthlyReport);
 
+document.querySelectorAll(".water-add-btn").forEach(function(button) {
+    button.addEventListener("click", function() {
+        const amount = Number(button.dataset.amount);
+        addWater(amount);
+    });
+});
+
+/* Initial Setup */
+
 selectedDate.value = getTodayDate();
 document.getElementById("monthly-month").value = getTodayDate().slice(0, 7);
+
 goalInput.value = dailyGoal;
+waterGoalInput.value = waterGoal;
 
 loadTheme();
 displayFoodItems();
+displayWaterRecords();
 updateReports();
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"}]}
