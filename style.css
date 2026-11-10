@@ -1,3 +1,4 @@
+
 :root {
     --background: #f4f6fb;
     --surface: #ffffff;
@@ -524,6 +525,13 @@ th {
 
 .water-delete-btn:hover {
     background: #c83d3d;
+}
+
+/* Food Record Count */
+
+#food-count {
+    margin: 5px 0 0;
+    font-size: 13px;
 }
 
 @media (max-width: 700px) {
