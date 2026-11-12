@@ -1,3 +1,4 @@
+
 const foodForm = document.getElementById("food-form");
 const goalForm = document.getElementById("goal-form");
 const waterForm = document.getElementById("water-form");
@@ -24,6 +25,7 @@ let dailyGoal = loadDailyGoal();
 let waterRecords = loadWaterRecords();
 let waterGoal = loadWaterGoal();
 let editId = null;
+let deletedItem = null;
 
 function getTodayDate() {
     const today = new Date();
@@ -178,6 +180,12 @@ function displayFoodItems() {
     foodList.replaceChildren();
 
     const selectedItems = getSelectedDateItems();
+
+    const foodCount = selectedItems.length;
+
+    document.getElementById("food-count").textContent =
+        `${foodCount} ${foodCount === 1 ? "food record" : "food records"}`;
+
     const searchValue = searchFood.value.trim().toLowerCase();
     const filterValue = filterMeal.value;
 
@@ -599,7 +607,7 @@ function updateWaterGoal(event) {
     const newGoal = Number(waterGoalInput.value);
 
     if (!Number.isInteger(newGoal) || newGoal < 1 || newGoal > 20000) {
-        showWaterGoalStatus("Enter a whole number between 1 and 20000 ml.", true);
+        showWaterGoalStatus("Enter a whole number between 1 and 20000.", true);
         return;
     }
 
