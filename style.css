@@ -261,6 +261,10 @@ button:hover {
     margin-bottom: 15px;
 }
 
+.clear-filters-btn {
+    margin-bottom: 10px;
+}
+
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
