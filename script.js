@@ -893,6 +893,17 @@ document.getElementById("theme-toggle").addEventListener("click", function() {
     localStorage.setItem("calorieTrackerTheme", isDark ? "dark" : "light");
 });
 
+/* Clear Filters */
+
+function clearFilters() {
+    searchFood.value = "";
+    filterMeal.value = "All";
+
+    displayFoodItems();
+
+    showStatus("Search and meal filters cleared successfully!");
+}
+
 /* Event Listeners */
 
 foodForm.addEventListener("submit", addFood);
@@ -921,6 +932,8 @@ selectedDate.addEventListener("change", function() {
 
 searchFood.addEventListener("input", displayFoodItems);
 filterMeal.addEventListener("change", displayFoodItems);
+
+document.getElementById("clear-filters-btn").addEventListener("click", clearFilters);
 
 document.getElementById("export-csv-btn").addEventListener("click", exportCSV);
 document.getElementById("undo-btn").addEventListener("click", undoDelete);
