@@ -386,6 +386,15 @@ function deleteFood(id) {
 
     if (!item) return;
 
+    const confirmed = confirm(
+        `Are you sure you want to delete "${item.name}"?`
+    );
+
+    if (!confirmed) {
+        showStatus("Food deletion cancelled.");
+        return;
+    }
+
     const previousItems = [...foodItems];
 
     foodItems = foodItems.filter(function(food) {
