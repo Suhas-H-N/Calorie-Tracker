@@ -1,93 +1,92 @@
-Calorie Tracker
-A simple and responsive web application to track daily food intake,
-calories, and water consumption. The application helps users monitor
-their calorie goals, review meal-wise summaries, and track water intake
-throughout the day.
-Features
-Food and Calorie Tracking
-- Add food items with food name, meal type, and calories.
-- Edit and delete food records.
-- View the total calories consumed for the selected date.
-- Calculate remaining calories based on the daily calorie goal.
-- Search food items by name.
-- Filter records by meal type.
+# Calorie Tracker
+
+A lightweight, responsive browser app for tracking daily food, calories, and water intake. Set personal daily goals, review meal summaries, and explore weekly and monthly calorie reports—all stored locally in your browser.
+
+## Features
+
+### Food and calorie tracking
+
+- Add, edit, and delete food entries with a name, meal category, and calorie amount.
+- View food records and calorie totals for a selected date, or jump back to today.
+- Search entries by food name and filter them by meal.
 - Undo the most recent food deletion.
-- Save food records in browser Local Storage.
-Calorie Goal
-- Set a custom daily calorie goal.
-- View calorie progress through a progress bar.
-- See the percentage of the goal completed.
-- View meal-wise calorie summaries for breakfast, lunch, dinner, and
-  snacks.
-Water Intake Tracking
-- Set a daily water intake goal.
-- Add water using quick-add buttons or a custom amount.
-- View consumed and remaining water.
-- Monitor water progress with a progress bar.
-- View water intake history for the selected date.
-- Delete individual water records or reset the selected date's water
-  records.
-- Save water records in browser Local Storage.
-Reports and Export
-- View a weekly calorie report.
-- View a monthly calorie report.
-- See daily totals, averages, highest-intake days, and goal-achieved
-  days.
-- Export food records for the selected date as a CSV file.
-Additional Features
-- Select a date to view and manage that day's records.
-- Quickly return to the current date.
-- Dark mode toggle.
-- Responsive layout for desktop and mobile screens.
-- Form validation for user input.
-Technologies Used
+- See calories consumed, calories remaining (or over goal), progress toward your daily goal, and a breakdown by meal.
+- Export the selected date's food entries as a CSV file.
+
+### Daily calorie goal
+
+- Set a custom daily calorie goal. The default is **2,000 kcal**.
+- Follow progress in the summary and progress bar.
+
+### Water intake tracking
+
+- Set a custom daily water goal. The default is **2,000 ml**.
+- Log water with the **+250 ml** and **+500 ml** buttons or enter a custom amount.
+- Review the selected date's water entries and total, track goal progress, delete entries, or reset that date's water records.
+
+### Reports and appearance
+
+- Review a seven-day calorie report centered on the selected date's week (Sunday–Saturday).
+- View a monthly chart, total, average for days with recorded intake, highest-intake day, and number of days at or above the current calorie goal.
+- Switch between light and dark themes.
+- Use the responsive interface on desktop and mobile screens.
+
+## Getting started
+
+This project uses plain HTML, CSS, and JavaScript; no package installation or build step is required.
+
+1. Clone or download this repository.
+2. Open `index.html` in a modern web browser.
+
+For local development, you can also open the project folder in an editor such as Visual Studio Code and serve it with an extension such as Live Server.
+
+## How to use
+
+1. Choose a date with the date picker, or click **Today**.
+2. Set your calorie and water goals if you want to change the defaults.
+3. Add food by entering its name, choosing a meal, and entering calories.
+4. Use **Edit** or **Delete** in the food records table to manage entries. After a deletion, use **Undo** to restore the most recently deleted entry.
+5. Search or filter food records, and click **Clear Filters** to reset the search and meal filter.
+6. Add water with a quick-add button or a custom amount. Delete individual water entries or reset water records for the selected date.
+7. Review the weekly and monthly reports. The monthly report uses the current calorie goal to count goal-achieved days.
+8. Click **Export CSV** to download food records for the selected date.
+
+## Project files
+
+```text
+Calorie-Tracker/
+├── index.html   # App layout and controls
+├── style.css    # Responsive layout and light/dark themes
+├── script.js    # Tracking, reports, and browser storage logic
+└── README.md
+```
+
+## Technologies
+
 - HTML5
 - CSS3
-- JavaScript
+- JavaScript (vanilla)
 - Browser Local Storage
-Project Structure
-calorie-tracker/
-├── index.html
-├── style.css
-├── script.js
-└── README.md
-Getting Started
-1. Download or clone this repository.
-2. Open the project folder in Visual Studio Code or another code
-   editor.
-3. Open index.html in your browser.
-You can also use the Live Server extension in Visual Studio Code to
-run the application locally.
-How to Use
-1. Open the application in your browser.
-2. Select a date or use the Today button.
-3. Enter a food name, choose a meal type, and enter the calories.
-4. Add the food item to view it in the food history.
-5. Edit, delete, search, or filter food records as needed.
-6. Set your daily calorie goal and monitor the progress bar.
-7. Add water using the quick-add buttons or enter a custom amount.
-8. Set your daily water goal and monitor your water intake.
-9. Review weekly and monthly calorie reports.
-10. Export the selected date's food records using the CSV export option.
-Data Storage
-The application uses browser Local Storage to save food records, water
-records, calorie goals, water goals, and the selected theme.
-- Data remains available after refreshing the page in the same
-  browser.
-- Data is stored locally in the browser and is not automatically
-  synced across devices or browsers.
-- Clearing the browser's site data may remove the saved records.
-Validation and Notes
-- Enter valid food names and positive calorie values.
-- Enter a positive water amount when adding water.
-- Calorie and water records are associated with the selected date.
-- The CSV export includes food records for the selected date.
-Future Improvements
-- Duplicate food entry option.
-- Custom meal categories.
-- Downloadable PDF reports.
-- User accounts and cloud data synchronization.
-- Charts and additional nutrition insights.
-Author
-Developed as a frontend practice project using HTML, CSS, and
-JavaScript.
+
+## Data and privacy
+
+The app saves food entries, water entries, calorie and water goals, and theme preference in the browser's Local Storage. Data is kept in the current browser on the current device; it is not uploaded or synchronized to an account. Clearing the browser's site data can remove saved records. Use the CSV export to keep a separate copy of food entries for a selected date.
+
+## Input limits
+
+- Food name is required and must contain non-whitespace text.
+- Food calories must be a positive number.
+- Calorie goal must be a whole number from **1 to 100,000 kcal**.
+- Water amount must be a whole number from **1 to 20,000 ml**.
+- Water goal must be a whole number from **1 to 20,000 ml**.
+
+## Notes
+
+- Entries are associated with the date selected when they are added. Changing the date shows that date's food and water records.
+- The weekly report runs from Sunday through Saturday for the week containing the selected date.
+- The monthly average is calculated over days with recorded calorie intake.
+- Calorie tracking is for personal record-keeping and is not medical or dietary advice.
+
+## License
+
+No license file is currently included in this repository. Unless a license is added, standard copyright applies and reuse is not automatically granted.
