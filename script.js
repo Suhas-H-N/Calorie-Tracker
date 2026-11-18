@@ -406,6 +406,10 @@ function deleteFood(id) {
         return;
     }
 
+    if (editId === id) {
+        resetFoodForm();
+    }
+
     deletedItem = item;
     document.getElementById("undo-container").classList.remove("hidden");
 
@@ -513,7 +517,7 @@ function updateWaterSummary() {
         `${total} ml`;
 
     document.getElementById("water-remaining").textContent =
-        `${Math.max(remaining, 0)} ml${remaining < 0 ? " over" : ""}`;
+        `${remaining < 0 ? Math.abs(remaining) : remaining} ml${remaining < 0 ? " over" : ""}`;
 
     document.getElementById("water-progress-percent").textContent =
         `${percentage}%`;
@@ -576,7 +580,7 @@ function displayWaterRecords() {
 function addWater(amount) {
     if (!Number.isInteger(amount) || amount <= 0 || amount > 20000) {
         showWaterStatus("Enter a valid water amount between 1 and 20000 ml.", true);
-        return;
+        return false;
     }
 
     const record = {
@@ -589,11 +593,12 @@ function addWater(amount) {
 
     if (!saveWaterRecords()) {
         waterRecords.pop();
-        return;
+        return false;
     }
 
     showWaterStatus(`${amount} ml of water added successfully!`);
     displayWaterRecords();
+    return true;
 }
 
 function addCustomWater(event) {
@@ -606,8 +611,9 @@ function addCustomWater(event) {
         return;
     }
 
-    addWater(amount);
-    waterForm.reset();
+    if (addWater(amount)) {
+        waterForm.reset();
+    }
 }
 
 function updateWaterGoal(event) {
@@ -933,6 +939,10 @@ document.getElementById("today-btn").addEventListener("click", function() {
 });
 
 selectedDate.addEventListener("change", function() {
+    if (!selectedDate.value) {
+        selectedDate.value = getTodayDate();
+    }
+
     resetFoodForm();
     displayFoodItems();
     displayWaterRecords();
